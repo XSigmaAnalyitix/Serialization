@@ -27,7 +27,7 @@ public:
 private:
     void initialize() {};
     test_serialization() = default;
-    SERIALIZATION_SERIALIZATION_EXPORT(SERIALIZATION_API, test_serialization, d_);
+    SERIALIZATION_MACRO(SERIALIZATION_API, test_serialization, d_);
 
     double d_{0};
 };

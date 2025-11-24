@@ -30,7 +30,7 @@ namespace serialization
 	protected:
 		void initialize() {};
 		test_serialization() = default;
-		SERIALIZATION_SERIALIZATION_EXPORT(SERIALIZATION_API, test_serialization, d_);
+		SERIALIZATION_MACRO(SERIALIZATION_API, test_serialization, d_);
 
 	protected:
 		double d_{ 0 };
@@ -46,7 +46,7 @@ namespace serialization
 	private:
 		void initialize() {};
 		test_derived_serialization() = default;
-		SERIALIZATION_SERIALIZATION_EXPORT(SERIALIZATION_API, test_derived_serialization, d_, n_);
+		SERIALIZATION_MACRO(SERIALIZATION_API, test_derived_serialization, d_, n_);
 
 		std::string n_;
 	};

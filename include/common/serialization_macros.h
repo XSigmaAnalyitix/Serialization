@@ -413,7 +413,7 @@ private:
     MAKE_META_DATA(T, GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__); \
     friend struct serialization::access::serilizer;
 
-#define SERIALIZATION_SERIALIZATION_EXPORT(EXPORT, T, ...)             \
+#define SERIALIZATION_MACRO(EXPORT, T, ...)             \
     DEFINE_WRAPING_METHODES(T, EXPORT)                          \
     MAKE_META_DATA(T, GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__); \
     friend struct serialization::access::serilizer;
