@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Add nlohmann/json as a header-only INTERFACE library
 add_library(nlohmann_json INTERFACE)
 target_include_directories(nlohmann_json INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty
+    ${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/nlohmann_json/include
 )
 
 # Automatically discover all source files in include/ directory
@@ -35,6 +35,13 @@ set_target_properties(Serialization PROPERTIES
     OUTPUT_NAME Serialization
     WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
+
+# Enable RTTI (required for typeid and dynamic_cast in serialization)
+if(MSVC)
+    target_compile_options(Serialization PRIVATE /GR)
+else()
+    target_compile_options(Serialization PRIVATE -frtti)
+endif()
 
 # Include directories for Serialization library
 target_include_directories(Serialization

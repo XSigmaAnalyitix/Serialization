@@ -18,6 +18,13 @@ foreach(TEST_FILE ${TEST_FILES})
             Serialization
     )
 
+    # Enable RTTI (required for dynamic_cast and typeid)
+    if(MSVC)
+        target_compile_options(${TEST_NAME} PRIVATE /GR)
+    else()
+        target_compile_options(${TEST_NAME} PRIVATE -frtti)
+    endif()
+
     # Set C++ standard and output directory for test executable
     # Place test executables in the same directory as the Serialization DLL
     set_target_properties(${TEST_NAME} PROPERTIES

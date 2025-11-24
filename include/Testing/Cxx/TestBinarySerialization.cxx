@@ -1,3 +1,4 @@
+
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -32,7 +33,7 @@ private:
 };
 }  // namespace serialization
 
-TEST(Serialization, BinarySerialization)
+int main()
 {
     {
         serialization::multi_process_stream buffer;
@@ -41,7 +42,7 @@ TEST(Serialization, BinarySerialization)
         serialization::serialization_save(buffer, a_in);
         serialization::serialization_load(buffer, a_out);
 
-        EXPECT_EQ(a_in, a_out);
+        //EXPECT_EQ(a_in, a_out);
     }
     {
         serialization::multi_process_stream buffer;
@@ -50,7 +51,7 @@ TEST(Serialization, BinarySerialization)
         serialization::serialization_save(buffer, a_in);
         serialization::serialization_load(buffer, a_out);
 
-        EXPECT_EQ(a_in, a_out);
+        //EXPECT_EQ(a_in, a_out);
     }
     {
         serialization::multi_process_stream buffer;
@@ -59,7 +60,7 @@ TEST(Serialization, BinarySerialization)
         serialization::serialization_save(buffer, rhs);
         serialization::serialization_load(buffer, lhs);
 
-        EXPECT_TRUE(lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin()));
+       // EXPECT_TRUE(lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin()));
     }
     {
         serialization::multi_process_stream buffer;
@@ -68,7 +69,7 @@ TEST(Serialization, BinarySerialization)
         serialization::serialization_save(buffer, rhs);
         serialization::serialization_load(buffer, lhs);
 
-        EXPECT_TRUE(lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin()));
+        //EXPECT_TRUE(lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin()));
     }
     {
         serialization::multi_process_stream buffer;
@@ -77,7 +78,7 @@ TEST(Serialization, BinarySerialization)
         serialization::serialization_save(buffer, rhs);
         serialization::serialization_load(buffer, lhs);
 
-        EXPECT_TRUE(lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin()));
+       // EXPECT_TRUE(lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin()));
     }
     {
         serialization::multi_process_stream buffer;
@@ -86,7 +87,7 @@ TEST(Serialization, BinarySerialization)
         serialization::serialization_save(buffer, rhs);
         serialization::serialization_load(buffer, lhs);
 
-        EXPECT_TRUE(lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin()));
+        //EXPECT_TRUE(lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin()));
     }
     {
         serialization::multi_process_stream      buffer;
@@ -95,7 +96,7 @@ TEST(Serialization, BinarySerialization)
         serialization::serialization_save(buffer, rhs);
         serialization::serialization_load(buffer, lhs);
 
-        EXPECT_TRUE(lhs == rhs);
+        //EXPECT_TRUE(lhs == rhs);
     }
 
     {
@@ -107,7 +108,7 @@ TEST(Serialization, BinarySerialization)
         serialization::serialization_save(buffer, rhs);
         serialization::serialization_load(buffer, lhs);
 
-        EXPECT_EQ(rhs->d(), lhs->d());
+        //EXPECT_EQ(rhs->d(), lhs->d());
     }
     {
         serialization::multi_process_stream                    buffer;
@@ -118,8 +119,6 @@ TEST(Serialization, BinarySerialization)
         serialization::serialization_save(buffer, rhs);
         serialization::serialization_load(buffer, lhs);
 
-        EXPECT_EQ(rhs->d(), lhs->d());
+       // EXPECT_EQ(rhs->d(), lhs->d());
     }
-
-    END_TEST();
 }

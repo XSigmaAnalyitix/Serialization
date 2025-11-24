@@ -23,15 +23,35 @@ namespace serialization
 	public:
 		explicit test_serialization(double d) : d_(d) {}
 
-		double d() const { return d_; }
+		const auto d() const { return d_; }
 
-	private:
+		virtual ~test_serialization() = default;
+
+	protected:
 		void initialize() {};
 		test_serialization() = default;
 		SERIALIZATION_SERIALIZATION_EXPORT(SERIALIZATION_API, test_serialization, d_);
 
+	protected:
 		double d_{ 0 };
 	};
+
+	class test_derived_serialization final :public test_serialization
+	{
+	public:
+		test_derived_serialization(double d, std::string n) : test_serialization(d), n_(std::move(n)) {}
+
+		const auto& n() const { return n_; }
+
+	private:
+		void initialize() {};
+		test_derived_serialization() = default;
+		SERIALIZATION_SERIALIZATION_EXPORT(SERIALIZATION_API, test_derived_serialization, d_, n_);
+
+		std::string n_;
+	};
+
+	SERIALIZATION_REGISTER_DERIVED_SERIALIZATION(test_derived_serialization);
 }  // namespace serialization
 
 #define SERIALIZATION_LOG_INFO(...)
@@ -131,6 +151,21 @@ int main()
 		serialization::serialization_load(buffer, lhs);
 
 		///EXPECT_EQ(rhs->d(), lhs->d());
+	}
+
+	SERIALIZATION_LOG_INFO("==== JsonSerialization: ptr_mutable")
+	{
+		serialization::json                                    buffer;
+		const auto& rhs =
+			std::make_shared<serialization::test_derived_serialization>(6.7, "me");
+
+		serialization::ptr_const<serialization::test_serialization> lhs;
+		serialization::serialization_save(buffer, rhs);
+		serialization::serialization_load(buffer, lhs);
+
+		auto lhs_derived = std::dynamic_pointer_cast<const serialization::test_derived_serialization>(lhs);
+		if (rhs->d() != lhs->d())
+			throw;
 	}
 
 	SERIALIZATION_LOG_INFO("==== JsonSerialization: variant")
