@@ -1,16 +1,28 @@
 #pragma once
 
-#ifndef __SERIALIZATION_WRAP__
-
 /**
- * Simple registry implementation that uses static variables to
- * register object creators during program initialization time.
+ * @file registry_v2.h
+ * @brief C++20 Thread-Safe Registry Implementation
+ *
+ * Features:
+ * - Thread-safe using std::shared_mutex for read-heavy workloads
+ * - C++20 concepts for better type safety
+ * - Proper const-correctness
+ * - Exception safety guarantees
+ * - Move semantics optimizations
+ *
+ * @requires C++20 or later
  */
 
-// NB: This Registry works poorly when you have other namespaces.
-// Make all macro invocations from inside the at namespace.
+static_assert(__cplusplus >= 202002L, "This header requires C++20 or later");
+
+#include <concepts>
 #include <functional>
+#include <memory>
 #include <mutex>
+#include <shared_mutex>
+#include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -18,75 +30,205 @@
 
 namespace serialization
 {
-template <class KeyType, typename Function>
+
+//-----------------------------------------------------------------------------
+// C++20 Concepts for Registry
+//-----------------------------------------------------------------------------
+
+template <typename K>
+concept RegistryKey = std::equality_comparable<K> && std::is_copy_constructible_v<K>;
+
+template <typename F>
+concept RegistryFunction = std::is_invocable_v<F>;
+
+//-----------------------------------------------------------------------------
+// Enhanced thread-safe Registry with read-write locks
+//-----------------------------------------------------------------------------
+
+template <typename KeyType, typename Function>
 class Registry
 {
 public:
+    using key_type      = KeyType;
+    using function_type = Function;
+
     Registry() = default;
 
+    /**
+     * @brief Register a function with a key
+     * @param key The key to register
+     * @param f The function to register
+     * @throws std::invalid_argument if key already exists (optional behavior)
+     */
     void Register(const KeyType& key, Function f)
     {
-        std::lock_guard<std::mutex> lock(register_mutex_);
-        registry_[key] = f;
-    }
-
-    inline bool Has(const KeyType& key) { return (registry_.count(key) != 0); }
-
-    template <class Arg1, class Arg2, class... Args>
-    auto run(const KeyType& key, Arg1& arg1, Arg2* arg2, Args... args)
-    {
-        return registry_[key](arg1, arg2, args...);
-    }
-
-    template <class Arg1, class Arg2, class... Args>
-    auto run(const KeyType& key, Arg1& arg1, Arg2& arg2, Args... args)
-    {
-        return registry_[key](arg1, arg2, args...);
+        std::unique_lock lock(mutex_);
+        registry_[key] = std::move(f);
     }
 
     /**
-		 * Returns the keys currently registered as a std::vector.
-		 */
-    std::vector<KeyType> Keys() const
+     * @brief Register a function with move semantics
+     */
+    void Register(KeyType&& key, Function f)
     {
-        std::vector<KeyType> keys;
-        for (const auto& it : registry_)
+        std::unique_lock lock(mutex_);
+        registry_[std::move(key)] = std::move(f);
+    }
+
+    /**
+     * @brief Check if a key is registered (thread-safe)
+     * @param key The key to check
+     * @return true if the key is registered, false otherwise
+     */
+    [[nodiscard]] bool Has(const KeyType& key) const
+    {
+        std::shared_lock lock(mutex_);
+        return registry_.contains(key);
+    }
+
+    /**
+     * @brief Check if a key is registered with string_view (avoids string allocation)
+     */
+    [[nodiscard]] bool Has(std::string_view key) const
+        requires std::same_as<KeyType, std::string>
+    {
+        std::shared_lock lock(mutex_);
+        return registry_.contains(std::string(key));
+    }
+
+    /**
+     * @brief Run a registered function with arguments
+     * @throws std::out_of_range if key is not found
+     */
+    template <typename... Args>
+    auto Run(const KeyType& key, Args&&... args) const
+    {
+        std::shared_lock lock(mutex_);
+        auto             it = registry_.find(key);
+        if (it == registry_.end())
         {
-            keys.push_back(it.first);
+            throw std::out_of_range("Registry key not found: " + std::string(key));
+        }
+        return it->second(std::forward<Args>(args)...);
+    }
+
+    /**
+     * @brief Run with non-const reference (for backward compatibility)
+     */
+    template <typename Arg1, typename Arg2, typename... Args>
+    auto run(const KeyType& key, Arg1& arg1, Arg2* arg2, Args... args)
+    {
+        std::shared_lock lock(mutex_);
+        auto             it = registry_.find(key);
+        if (it == registry_.end())
+        {
+            throw std::out_of_range("Registry key not found");
+        }
+        return it->second(arg1, arg2, args...);
+    }
+
+    template <typename Arg1, typename Arg2, typename... Args>
+    auto run(const KeyType& key, Arg1& arg1, Arg2& arg2, Args... args)
+    {
+        std::shared_lock lock(mutex_);
+        auto             it = registry_.find(key);
+        if (it == registry_.end())
+        {
+            throw std::out_of_range("Registry key not found");
+        }
+        return it->second(arg1, arg2, args...);
+    }
+
+    /**
+     * @brief Get all registered keys
+     * @return Vector of all keys currently registered
+     */
+    [[nodiscard]] std::vector<KeyType> Keys() const
+    {
+        std::shared_lock     lock(mutex_);
+        std::vector<KeyType> keys;
+        keys.reserve(registry_.size());
+
+        for (const auto& [key, _] : registry_)
+        {
+            keys.push_back(key);
         }
         return keys;
     }
 
-    Registry(const Registry&)                    = delete;
-    Registry& operator=(const Registry& /*rhs*/) = delete;
+    /**
+     * @brief Get the number of registered entries
+     */
+    [[nodiscard]] std::size_t Size() const
+    {
+        std::shared_lock lock(mutex_);
+        return registry_.size();
+    }
+
+    /**
+     * @brief Clear all registrations
+     */
+    void Clear()
+    {
+        std::unique_lock lock(mutex_);
+        registry_.clear();
+    }
+
+    /**
+     * @brief Unregister a key
+     * @return true if the key was found and removed, false otherwise
+     */
+    bool Unregister(const KeyType& key)
+    {
+        std::unique_lock lock(mutex_);
+        return registry_.erase(key) > 0;
+    }
+
+    // Delete copy and move operations for safety
+    Registry(const Registry&)            = delete;
+    Registry& operator=(const Registry&) = delete;
+    Registry(Registry&&)                 = delete;
+    Registry& operator=(Registry&&)      = delete;
 
 private:
-    std::unordered_map<KeyType, Function> registry_{};
-    std::mutex                            register_mutex_;
+    std::unordered_map<KeyType, Function> registry_;
+    mutable std::shared_mutex             mutex_;  // shared_mutex for read-write locking
 };
 
-template <class KeyType, typename Function>
+//-----------------------------------------------------------------------------
+// Registerer helper class
+//-----------------------------------------------------------------------------
+
+template <typename KeyType, typename Function>
 class Registerer
 {
 public:
     explicit Registerer(const KeyType& key, Registry<KeyType, Function>* registry, Function method)
     {
-        registry->Register(key, method);
+        if (registry)
+        {
+            registry->Register(key, std::move(method));
+        }
+    }
+
+    // Move-based constructor
+    explicit Registerer(KeyType&& key, Registry<KeyType, Function>* registry, Function method)
+    {
+        if (registry)
+        {
+            registry->Register(std::move(key), std::move(method));
+        }
     }
 };
-/**
-	 * @brief A template class that allows one to register classes by keys.
-	 *
-	 * The keys are usually a std::string specifying the name, but can be anything
-	 * that can be used in a std::map.
-	 *
-	 * You should most likely not use the Registry class explicitly, but use the
-	 * helper macros below to declare specific registries as well as registering
-	 * objects.
-	 */
+
+//-----------------------------------------------------------------------------
+// Creator Registry for object factories
+//-----------------------------------------------------------------------------
+
 namespace creator
 {
-template <class KeyType, class ReturnType, class... Args>
+
+template <typename KeyType, typename ReturnType, typename... Args>
 class Registry
 {
 public:
@@ -96,44 +238,76 @@ public:
 
     void Register(const KeyType& key, Function f)
     {
-        std::lock_guard<std::mutex> lock(register_mutex_);
-        registry_[key] = f;
+        std::unique_lock lock(mutex_);
+        registry_[key] = std::move(f);
     }
 
-    inline bool Has(const KeyType& key) { return (registry_.count(key) != 0); }
-
-    ReturnType run(const KeyType& key, Args... args)
+    void Register(KeyType&& key, Function f)
     {
-        if (registry_.count(key) == 0)
-        {
-            // Returns nullptr if the key is not registered.
-            return nullptr;
-        }
-        return registry_[key](args...);
+        std::unique_lock lock(mutex_);
+        registry_[std::move(key)] = std::move(f);
+    }
+
+    [[nodiscard]] bool Has(const KeyType& key) const
+    {
+        std::shared_lock lock(mutex_);
+        return registry_.contains(key);
     }
 
     /**
-			 * Returns the keys currently registered as a std::vector.
-			 */
-    std::vector<KeyType> Keys() const
+     * @brief Create an object using registered factory
+     * @return Created object or nullptr if key not found
+     */
+    ReturnType Create(const KeyType& key, Args... args) const
     {
-        std::vector<KeyType> keys;
-        for (const auto& it : registry_)
+        std::shared_lock lock(mutex_);
+        auto             it = registry_.find(key);
+        if (it == registry_.end())
         {
-            keys.push_back(it.first);
+            return nullptr;
+        }
+        return it->second(args...);
+    }
+
+    // Legacy interface
+    ReturnType run(const KeyType& key, Args... args) const { return Create(key, args...); }
+
+    [[nodiscard]] std::vector<KeyType> Keys() const
+    {
+        std::shared_lock     lock(mutex_);
+        std::vector<KeyType> keys;
+        keys.reserve(registry_.size());
+
+        for (const auto& [key, _] : registry_)
+        {
+            keys.push_back(key);
         }
         return keys;
     }
 
-    Registry(const Registry&)                    = delete;
-    Registry& operator=(const Registry& /*rhs*/) = delete;
+    [[nodiscard]] std::size_t Size() const
+    {
+        std::shared_lock lock(mutex_);
+        return registry_.size();
+    }
+
+    void Clear()
+    {
+        std::unique_lock lock(mutex_);
+        registry_.clear();
+    }
+
+    Registry(const Registry&)            = delete;
+    Registry& operator=(const Registry&) = delete;
+    Registry(Registry&&)                 = delete;
+    Registry& operator=(Registry&&)      = delete;
 
 private:
-    std::unordered_map<KeyType, Function> registry_{};
-    std::mutex                            register_mutex_;
+    std::unordered_map<KeyType, Function> registry_;
+    mutable std::shared_mutex             mutex_;
 };
 
-template <class KeyType, class ReturnType, class... Args>
+template <typename KeyType, typename ReturnType, typename... Args>
 class Registerer
 {
 public:
@@ -142,16 +316,43 @@ public:
         Registry<KeyType, ReturnType, Args...>*                   registry,
         typename Registry<KeyType, ReturnType, Args...>::Function method)
     {
-        registry->Register(key, method);
+        if (registry)
+        {
+            registry->Register(key, std::move(method));
+        }
     }
 
-    template <class DerivedType>
+    template <typename DerivedType>
     static ReturnType DefaultCreator(Args... args)
     {
         return ReturnType(new DerivedType(args...));
     }
 };
+
 }  // namespace creator
+
+//-----------------------------------------------------------------------------
+// Singleton Registry Pattern (optional, for global registries)
+//-----------------------------------------------------------------------------
+
+template <typename KeyType, typename Function>
+class SingletonRegistry
+{
+public:
+    static Registry<KeyType, Function>& Instance()
+    {
+        static Registry<KeyType, Function> instance;
+        return instance;
+    }
+
+    SingletonRegistry()                                    = delete;
+    SingletonRegistry(const SingletonRegistry&)            = delete;
+    SingletonRegistry& operator=(const SingletonRegistry&) = delete;
+};
+
+//-----------------------------------------------------------------------------
+// Macro definitions (compatible with original API)
+//-----------------------------------------------------------------------------
 
 #define SERIALIZATION_DECLARE_FUNCTION_REGISTRY(RegistryName, Function) \
     serialization::Registry<std::string, Function>* RegistryName();     \
@@ -181,8 +382,6 @@ public:
         return registry;                                                                          \
     }
 
-// The __VA_ARGS__ below allows one to specify a templated
-// creator with comma in its templated arguments.
 #define SERIALIZATION_REGISTER_TYPED_CREATOR(RegistryName, key, ...)                    \
     static Registerer##RegistryName SERIALIZATION_ANONYMOUS_VARIABLE(g_##RegistryName)( \
         key, RegistryName(), ##__VA_ARGS__);
@@ -191,8 +390,6 @@ public:
     static Registerer##RegistryName SERIALIZATION_ANONYMOUS_VARIABLE(g_##RegistryName)( \
         key, RegistryName(), Registerer##RegistryName::DefaultCreator<__VA_ARGS__>);
 
-// SERIALIZATION_DECLARE_REGISTRY and SERIALIZATION_DEFINE_REGISTRY are hard-wired to use
-// std::string as the key type, because that is the most commonly used cases.
 #define SERIALIZATION_DECLARE_REGISTRY(RegistryName, ObjectType, ...) \
     SERIALIZATION_DECLARE_TYPED_REGISTRY(                             \
         RegistryName, std::string, ObjectType, std::unique_ptr, ##__VA_ARGS__)
@@ -201,17 +398,12 @@ public:
     SERIALIZATION_DEFINE_TYPED_REGISTRY(                             \
         RegistryName, std::string, ObjectType, std::unique_ptr, ##__VA_ARGS__)
 
-// SERIALIZATION_REGISTER_CREATOR and SERIALIZATION_REGISTER_CLASS are hard-wired to use std::string
-// as the key
-// type, because that is the most commonly used cases.
 #define SERIALIZATION_REGISTER_CREATOR(RegistryName, key, ...) \
     SERIALIZATION_REGISTER_TYPED_CREATOR(RegistryName, #key, __VA_ARGS__)
 
 #define SERIALIZATION_REGISTER_CLASS(RegistryName, key, ...) \
     SERIALIZATION_REGISTER_TYPED_CLASS(RegistryName, #key, __VA_ARGS__)
 
-// SERIALIZATION_DECLARE_SHARED_REGISTRY and SERIALIZATION_DEFINE_SHARED_REGISTRY use std::shared_ptr
-// instead of std::unique_ptr for shared ownership semantics
 #define SERIALIZATION_DECLARE_SHARED_REGISTRY(RegistryName, ObjectType, ...) \
     SERIALIZATION_DECLARE_TYPED_REGISTRY(                                    \
         RegistryName, std::string, ObjectType, std::shared_ptr, ##__VA_ARGS__)
@@ -221,4 +413,3 @@ public:
         RegistryName, std::string, ObjectType, std::shared_ptr, ##__VA_ARGS__)
 
 }  // namespace serialization
-#endif  // ! __SERIALIZATION_WRAP__

@@ -8,6 +8,16 @@ project(Serialization
 # Enable CTest for testing
 enable_testing()
 
+# Fetch Google Test
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
 # Set C++ standard to C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,7 +32,6 @@ target_include_directories(nlohmann_json INTERFACE
 file(GLOB_RECURSE SERIALIZATION_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.cxx"
 )
 
 # Exclude Testing directory files from the library sources

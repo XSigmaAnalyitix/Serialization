@@ -7,6 +7,7 @@
 #include <new>          // for operator new
 #include <type_traits>  // for declval, false_type, true_type, enable...
 #include <utility>      // for forward, pair
+#include <variant>      // for monostate
 
 #include "common/helper.h"
 #include "util/macros.h"
@@ -36,8 +37,10 @@ struct is_base_serializable
     static constexpr bool value =
         ((std::is_arithmetic<T>::value && !std::is_pointer<T>::value && !std::is_array<T>::value) ||
          std::is_same<T, const char*>::value || std::is_same<T, std::string>::value ||
-         std::is_enum<T>::value || std::is_same<T, serialization::key>::value ||
-         std::is_same<T, serialization::datetime>::value || std::is_same<T, serialization::tenor>::value);
+         std::is_enum<T>::value || std::is_same<T, std::monostate>::value ||
+         std::is_same<T, serialization::key>::value ||
+         std::is_same<T, serialization::datetime>::value ||
+         std::is_same<T, serialization::tenor>::value);
 };
 
 //-----------------------------------------------------------------------------
@@ -247,10 +250,7 @@ struct has_emplace_back : std::false_type
 };
 
 template <typename T>
-struct has_emplace_back<
-    T,
-    std::void_t<decltype(std::declval<T>().emplace_back())>>
-    : std::true_type
+struct has_emplace_back<T, std::void_t<decltype(std::declval<T>().emplace_back())>> : std::true_type
 {
 };
 

@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <variant>
 
 #include "common/serialization_type_traits.h"
 #include "util/export.h"
@@ -87,6 +88,10 @@ struct archiver_wrapper<json>
             auto x  = std::string{obj};
             archive = x;
         }
+        else if constexpr (std::is_same<T, std::monostate>::value)
+        {
+            archive = nullptr;
+        }
         else if constexpr (std::is_enum<T>::value)
         {
             to_json(archive, obj);
@@ -112,7 +117,15 @@ struct archiver_wrapper<json>
         }
         else if constexpr (std::is_same<T, const char*>::value)
         {
-            obj = archive.get<std::string>().c_str();
+            // Note: const char* cannot be safely deserialized
+            // This should never be instantiated - use std::string instead
+            static_assert(
+                serialization::always_false<T>::value,
+                "Cannot deserialize const char* - use std::string instead");
+        }
+        else if constexpr (std::is_same<T, std::monostate>::value)
+        {
+            obj = std::monostate{};
         }
         else if constexpr (std::is_enum<T>::value)
         {
@@ -197,6 +210,11 @@ struct archiver_wrapper<serialization::multi_process_stream>
     {
         if constexpr (serialization::has_float<T>::value)
             archive << static_cast<double>(obj.as_float());
+        else if constexpr (std::is_same<T, std::monostate>::value)
+        {
+            // monostate is an empty type - just write a marker byte
+            archive << static_cast<unsigned char>(0);
+        }
         else if constexpr (std::is_enum<T>::value)
             archive << static_cast<int>(obj);
         else if constexpr (
@@ -215,6 +233,13 @@ struct archiver_wrapper<serialization::multi_process_stream>
             double d;
             archive >> d;
             obj = d;
+        }
+        else if constexpr (std::is_same<T, std::monostate>::value)
+        {
+            // monostate is an empty type - just read and discard the marker byte
+            unsigned char marker;
+            archive >> marker;
+            obj = std::monostate{};
         }
         else if constexpr (std::is_enum<T>::value)
         {
