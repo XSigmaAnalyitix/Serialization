@@ -22,7 +22,7 @@
 #include <string_view>
 #include <vector>
 
-#include "common/export.h"
+#include "util/export.h"
 
 namespace serialization
 {

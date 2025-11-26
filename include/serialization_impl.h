@@ -13,7 +13,7 @@
 
 #include "common/archiver_wrapper.h"
 #include "common/helper.h"
-#include "common/pointer.h"
+#include "util/pointer.h"
 #include "common/reflection.h"
 #include "common/serialization_type_traits.h"
 #include "util/registry.h"
@@ -281,7 +281,7 @@ namespace serialization
 									if constexpr (!is_reflection_empty<std::decay_t<decltype(p)>>::value)
 									{
 										auto& ptr = obj.*(p.member());
-										serialization::serialization_load<archiver, typename decltype(p)::type>(
+										serialization::serialization_load<archiver, typename decltype(p)::member_type>(
 											archive_tmp, ptr);
 									}
 								});

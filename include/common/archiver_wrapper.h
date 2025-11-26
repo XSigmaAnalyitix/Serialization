@@ -9,7 +9,7 @@
 #include <string_view>
 #include <type_traits>
 
-#include "common/export.h"
+#include "util/export.h"
 #include "common/serialization_type_traits.h"
 #include "util/multi_process_stream.h"
 #include "util/registry.h"

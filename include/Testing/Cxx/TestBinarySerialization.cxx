@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "common/pointer.h"
+#include "util/pointer.h"
 #include "common/serialization_macros.h"
 #include "serialization_impl.h"
 #include "util/multi_process_stream.h"

@@ -10,7 +10,7 @@
 #include <utility>
 #include <variant>
 
-#include "common/pointer.h"
+#include "util/pointer.h"
 #include "common/serialization_macros.h"
 #include "serialization.h"
 #include "serialization_impl.h"

@@ -1,6 +1,6 @@
 #include "common/archiver_wrapper.h"
 
-#include "common/export.h"
+#include "util/export.h"
 #include "util/registry.h"
 
 namespace serialization

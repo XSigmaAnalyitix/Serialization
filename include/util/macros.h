@@ -5,7 +5,7 @@
 #include <type_traits>  // for std::underlying_type
 #include <typeinfo>
 
-#include "common/configure.h"
+#include "util/configure.h"
 
 //----------------------------------------------------------------------------
 // Check for unsupported old compilers - updated minimum requirements

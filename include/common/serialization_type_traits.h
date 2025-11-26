@@ -11,8 +11,8 @@
 #include <utility>      // for forward, pair
 
 #include "common/helper.h"
-#include "common/macros.h"
-#include "common/pointer.h"
+#include "util/macros.h"
+#include "util/pointer.h"
 
 namespace serialization
 {

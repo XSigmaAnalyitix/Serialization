@@ -6,9 +6,9 @@
 #include <string>
 #include <vector>
 
-#include "common/export.h"
+#include "util/export.h"
 #include "common/archiver_wrapper.h"
-#include "common/pointer.h"
+#include "util/pointer.h"
 #include "serialization_impl.h"
 #include "util/multi_process_stream.h"
 #include "util/registry.h"

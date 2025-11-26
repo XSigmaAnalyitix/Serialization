@@ -28,8 +28,8 @@
 #include <string_view>  // for string_view
 #include <vector>       // for vector
 
-#include "common/export.h"  // for SERIALIZATION_API, SERIALIZATION_VISIBILITY
-#include "common/macros.h"  // for SERIALIZATION_PRINTF_ATTRIBUTE
+#include "util/export.h"  // for SERIALIZATION_API, SERIALIZATION_VISIBILITY
+#include "util/macros.h"  // for SERIALIZATION_PRINTF_ATTRIBUTE
 
 // =============================================================================
 // ENUM CONVERSION UTILITIES

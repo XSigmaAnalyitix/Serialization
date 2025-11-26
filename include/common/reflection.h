@@ -1,69 +1,78 @@
 #pragma once
 
-#ifndef __SERIALIZATION_WRAP__
+#include <utility>
+#include <string_view>
+#include <type_traits>
 
-namespace serialization
-{
-#define TYPENAME(T) #T
+namespace serialization {
 
+// Helper to iterate over integer sequences
 template <typename T, T... S, typename F>
-constexpr void for_sequence(std::integer_sequence<T, S...> /*unused*/, F&& f)
-{
-    using unpack_t = int[];  // NOLINT
-    (void)unpack_t{(static_cast<void>(f(std::integral_constant<T, S>{})), 0)..., 0};
+constexpr void for_sequence(std::integer_sequence<T, S...>, F&& f) {
+    (f(std::integral_constant<T, S>{}), ...);
 }
 
+// Reflection for class members
 template <typename Class, typename T>
-struct reflection_impl
-{
+class reflection_impl {
 public:
-    constexpr reflection_impl(T Class::* member, const char* name, const char* description)
-        : member_(member), name_(name), description_(description)
-    {
+    using class_type = Class;
+    using member_type = T;
+    using pointer_type = T Class::*;
+    
+    constexpr reflection_impl(pointer_type member, 
+                             std::string_view name, 
+                             std::string_view description = "") noexcept
+        : member_(member), name_(name), description_(description) {}
+    
+    constexpr pointer_type member() const noexcept { return member_; }
+    constexpr std::string_view name() const noexcept { return name_; }
+    constexpr std::string_view description() const noexcept { return description_; }
+    
+    constexpr const T& get(const Class& obj) const noexcept {
+        return obj.*member_;
     }
-
-    using type = T;
-
-    auto member() const { return member_; }
-    auto name() const { return name_; }
-    auto description() const { return description_; }
-
-    auto member() { return member_; }
-    auto name() { return name_; }
-    auto description() { return description_; }
-
+    
+    constexpr T& get(Class& obj) const noexcept {
+        return obj.*member_;
+    }
+    
+    constexpr void set(Class& obj, const T& value) const {
+        obj.*member_ = value;
+    }
+    
 private:
-    T Class::*  member_;
-    const char* name_;
-    const char* description_;
+    pointer_type member_;
+    std::string_view name_;
+    std::string_view description_;
 };
 
+// Factory function
 template <typename Class, typename T>
-constexpr auto reflection(
-    T Class::* member, const char* name, const char* description = TYPENAME(T))
-{
+constexpr auto reflection(T Class::* member, 
+                         std::string_view name, 
+                         std::string_view description = "") noexcept {
     return reflection_impl<Class, T>{member, name, description};
 }
 
-// New reflection_empty for classes without members
+// For empty classes
 template <typename Class>
-struct reflection_empty
-{
+class reflection_empty {
 public:
-    constexpr reflection_empty(const char* name) : name_(name) {}
-
-    auto name() const { return name_; }
-    auto name() { return name_; }
-
+    using class_type = Class;
+    
+    constexpr reflection_empty(std::string_view name = "") noexcept 
+        : name_(name) {}
+    
+    constexpr std::string_view name() const noexcept { return name_; }
+    
 private:
-    const char* name_;
+    std::string_view name_;
 };
 
-// New reflection helper for classes without members
 template <typename Class>
-constexpr auto reflection_no_member(const char* name = "")
-{
+constexpr auto reflection_no_member(std::string_view name = "") noexcept {
     return reflection_empty<Class>{name};
 }
-}  // namespace serialization
-#endif
+
+} // namespace serialization

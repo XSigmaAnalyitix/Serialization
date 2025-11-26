@@ -24,7 +24,7 @@
 #include <string>   // for char_traits, string, operator<<, allocator, operator==, oper...
 #include <string_view>
 
-#include "common/macros.h"   // for SERIALIZATION_UNUSED, SERIALIZATION_HAS_CXA_DEMANGLE
+#include "util/macros.h"   // for SERIALIZATION_UNUSED, SERIALIZATION_HAS_CXA_DEMANGLE
 
 // =============================================================================
 // PLATFORM-SPECIFIC CONFIGURATION

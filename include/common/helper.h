@@ -5,7 +5,7 @@
 #include <new>      // for operator new
 #include <utility>  // for forward
 
-#include "common/pointer.h"  // for shared_ptr, unique_ptr
+#include "util/pointer.h"  // for shared_ptr, unique_ptr
 
 namespace serialization
 {
@@ -32,12 +32,14 @@ struct serilizer
         item.~Item();
     }
 
+    // use in case the object default constructor is not public
     template <typename T>
     inline static auto make_ptr()
     {
         return std::unique_ptr<T>(new T());
     }
 
+    // use in case the object default constructor is public
     template <typename T>
     inline static auto make_shard_ptr()
     {
