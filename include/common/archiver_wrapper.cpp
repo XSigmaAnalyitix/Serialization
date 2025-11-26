@@ -5,9 +5,18 @@
 
 namespace serialization
 {
-SERIALIZATION_API SERIALIZATION_DEFINE_FUNCTION_REGISTRY(
-    JsonSerializationRegistry, json_serilaization_function_t);
+//=============================================================================
+// Global Registry Definitions
+//=============================================================================
 
+/// @brief Global registry for JSON serialization functions
+/// Maps type names to their corresponding serialization callbacks
 SERIALIZATION_API SERIALIZATION_DEFINE_FUNCTION_REGISTRY(
-    BinarySerializationRegistry, binary_serilaization_function_t);
+    JsonSerializationRegistry, json_serialization_function_t);
+
+/// @brief Global registry for binary serialization functions
+/// Maps type names to their corresponding serialization callbacks
+SERIALIZATION_API SERIALIZATION_DEFINE_FUNCTION_REGISTRY(
+    BinarySerializationRegistry, binary_serialization_function_t);
+
 }  // namespace serialization

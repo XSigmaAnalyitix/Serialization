@@ -1,8 +1,7 @@
 #pragma once
 
-#ifndef __SERIALIZATION_WRAP__
-
 #include <cstddef>
+#include <concepts>
 #include <functional>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -17,6 +16,10 @@
 #include "util/registry.h"
 #include "util/string_util.h"
 
+//=============================================================================
+// Logging Macros
+//=============================================================================
+
 #define SERIALIZATION_LOG_WARNING(x) std::cerr << "Warning: " << x << std::endl;
 
 namespace serialization
@@ -30,34 +33,72 @@ namespace serialization
 {
 using json = nlohmann::ordered_json;
 
-using json_serilaization_function_t = std::function<void(json&, void*, bool)>;
-using binary_serilaization_function_t =
+//=============================================================================
+// Serialization Function Type Aliases
+//=============================================================================
+// Note: These type aliases define the function signatures for serialization
+// callbacks used in the registry pattern for polymorphic type handling.
+
+/// @brief Function type for JSON serialization callbacks
+/// @param archive The JSON object to serialize to/from
+/// @param obj Pointer to the object being serialized
+/// @param is_saving True if saving, false if loading
+using json_serialization_function_t = std::function<void(json&, void*, bool)>;
+
+/// @brief Function type for binary serialization callbacks
+/// @param archive The binary stream to serialize to/from
+/// @param obj Pointer to the object being serialized
+/// @param is_saving True if saving, false if loading
+using binary_serialization_function_t =
     std::function<void(serialization::multi_process_stream&, void*, bool)>;
 
-SERIALIZATION_API SERIALIZATION_DECLARE_FUNCTION_REGISTRY(
-    JsonSerializationRegistry, json_serilaization_function_t);
-SERIALIZATION_API SERIALIZATION_DECLARE_FUNCTION_REGISTRY(
-    BinarySerializationRegistry, binary_serilaization_function_t);
+// Backward compatibility aliases (typo in original names - use corrected versions above)
+// Note: These are kept for API compatibility but should not be used in new code
+using json_serilaization_function_t = json_serialization_function_t;
+using binary_serilaization_function_t = binary_serialization_function_t;
 
-//-----------------------------------------------------------------------------
-template <typename archiver>
+SERIALIZATION_API SERIALIZATION_DECLARE_FUNCTION_REGISTRY(
+    JsonSerializationRegistry, json_serialization_function_t);
+SERIALIZATION_API SERIALIZATION_DECLARE_FUNCTION_REGISTRY(
+    BinarySerializationRegistry, binary_serialization_function_t);
+
+//=============================================================================
+// Primary Template (Specialization Required)
+//=============================================================================
+// Note: The Archiver concept is defined in serialization_concepts.h
+
+/// @brief Base template for archiver wrapper
+/// Specializations must be provided for specific archiver types (json, multi_process_stream)
+template <typename ArchiveType>
 class archiver_wrapper
 {
+    // Primary template is intentionally empty
+    // Specializations must be provided for concrete archiver types
 };
 
-//-----------------------------------------------------------------------------
+//=============================================================================
+// Enum Serialization Helpers
+//=============================================================================
+
+/// @brief Convert enum to JSON representation
+/// @tparam EnumType Must be an enum type
+/// @param archive The JSON object to write to
+/// @param e The enum value to serialize
 template <typename EnumType>
+    requires std::is_enum_v<EnumType>
 void to_json(json& archive, const EnumType& e)
 {
-    static_assert(std::is_enum_v<EnumType>, "Type must be an enum");
     archive = std::string(enum_to_string(e));
 }
 
-//-----------------------------------------------------------------------------
+/// @brief Convert JSON representation to enum
+/// @tparam EnumType Must be an enum type
+/// @param archive The JSON object to read from
+/// @param e The enum value to deserialize into
 template <typename EnumType>
+    requires std::is_enum_v<EnumType>
 void from_json(const json& archive, EnumType& e)
 {
-    static_assert(std::is_enum_v<EnumType>, "Type must be an enum");
     if (archive.is_string())
     {
         auto str = archive.get<std::string>();
@@ -69,36 +110,51 @@ void from_json(const json& archive, EnumType& e)
     }
 }
 
-//-----------------------------------------------------------------------------
+//=============================================================================
+// Archive Field Names (Compile-time Constants)
+//=============================================================================
+
+/// @brief JSON field name for class type information
 inline constexpr std::string_view CLASS_NAME{R"(Class)"};
+
+/// @brief JSON field name for container size information
 inline constexpr std::string_view SIZE_NAME{R"(Size)"};
 
+//=============================================================================
+// JSON Archiver Specialization
+//=============================================================================
+
+/// @brief Specialization of archiver_wrapper for JSON archives
+/// Provides serialization/deserialization operations for JSON format
 template <>
 struct archiver_wrapper<json>
 {
-    template <typename T, std::enable_if_t<is_base_serializable<T>::value, int> = 0>
+    /// @brief Serialize a base-serializable type to JSON
+    /// @tparam T Must satisfy is_base_serializable concept
+    /// @param archive The JSON object to write to
+    /// @param obj The object to serialize
+    template <typename T>
+        requires is_base_serializable<T>::value
     static void push(json& archive, const T& obj)
     {
-        if constexpr (std::is_same<T, serialization::datetime>::value)
+        if constexpr (std::is_same_v<T, serialization::datetime>)
         {
             archive = static_cast<double>(obj);
         }
-        else if constexpr (std::is_same<T, const char*>::value)
+        else if constexpr (std::is_same_v<T, const char*>)
         {
-            auto x  = std::string{obj};
-            archive = x;
+            archive = std::string{obj};
         }
-        else if constexpr (std::is_same<T, std::monostate>::value)
+        else if constexpr (std::is_same_v<T, std::monostate>)
         {
             archive = nullptr;
         }
-        else if constexpr (std::is_enum<T>::value)
+        else if constexpr (std::is_enum_v<T>)
         {
             to_json(archive, obj);
         }
-        else if constexpr (
-            std::is_same<T, serialization::tenor>::value ||
-            std::is_same<T, serialization::key>::value)
+        else if constexpr (std::is_same_v<T, serialization::tenor> ||
+                           std::is_same_v<T, serialization::key>)
         {
             archive = obj.to_string();
         }
@@ -106,16 +162,21 @@ struct archiver_wrapper<json>
         {
             archive = obj;
         }
-    };
+    }
 
-    template <typename T, std::enable_if_t<is_base_serializable<T>::value, int> = 0>
+    /// @brief Deserialize a base-serializable type from JSON
+    /// @tparam T Must satisfy is_base_serializable concept
+    /// @param archive The JSON object to read from
+    /// @param obj The object to deserialize into
+    template <typename T>
+        requires is_base_serializable<T>::value
     static void pop(json& archive, T& obj)
     {
-        if constexpr (std::is_same<T, serialization::datetime>::value)
+        if constexpr (std::is_same_v<T, serialization::datetime>)
         {
             obj = archive.get<double>();
         }
-        else if constexpr (std::is_same<T, const char*>::value)
+        else if constexpr (std::is_same_v<T, const char*>)
         {
             // Note: const char* cannot be safely deserialized
             // This should never be instantiated - use std::string instead
@@ -123,17 +184,16 @@ struct archiver_wrapper<json>
                 serialization::always_false<T>::value,
                 "Cannot deserialize const char* - use std::string instead");
         }
-        else if constexpr (std::is_same<T, std::monostate>::value)
+        else if constexpr (std::is_same_v<T, std::monostate>)
         {
             obj = std::monostate{};
         }
-        else if constexpr (std::is_enum<T>::value)
+        else if constexpr (std::is_enum_v<T>)
         {
             from_json(archive, obj);
         }
-        else if constexpr (
-            std::is_same<T, serialization::tenor>::value ||
-            std::is_same<T, serialization::key>::value)
+        else if constexpr (std::is_same_v<T, serialization::tenor> ||
+                           std::is_same_v<T, serialization::key>)
         {
             obj = archive.get<std::string>();
         }
@@ -141,91 +201,162 @@ struct archiver_wrapper<json>
         {
             obj = archive.get<T>();
         }
-    };
+    }
 
+    /// @brief Store class type information in JSON
+    /// @param archive The JSON object to write to
+    /// @param name The class name to store
     static void push_class_name(json& archive, const std::string& name)
     {
-        archive[CLASS_NAME.data()] = name;
-    };
+        archive[std::string(CLASS_NAME)] = name;
+    }
 
-    static auto pop_class_name(json& archive)
+    /// @brief Retrieve class type information from JSON
+    /// @param archive The JSON object to read from
+    /// @return The stored class name, or empty string if not found
+    [[nodiscard]] static auto pop_class_name(json& archive)
     {
-        // Check if the key exists in the JSON object
-        if (!archive.contains(CLASS_NAME.data()))
+        if (!archive.contains(std::string(CLASS_NAME)))
         {
             SERIALIZATION_LOG_WARNING("json does not have a class name field!");
+            return std::string();
         }
-        else
+
+        const auto& name = archive[std::string(CLASS_NAME)];
+        if (name.is_string())
         {
-            const auto& name = archive[CLASS_NAME.data()];
-            // Check if the value is a string
-            if (name.is_string())
-            {
-                return name.get<std::string>();
-            }
-            else
-            {
-                SERIALIZATION_LOG_WARNING("name" << name << "is not a string!");
-            }
+            return name.get<std::string>();
         }
 
-        // Return an empty string if the key doesn't exist or the value isn't a string
+        SERIALIZATION_LOG_WARNING("Class name field is not a string!");
         return std::string();
-    };
+    }
 
+    /// @brief Store container index in JSON
+    /// @param archive The JSON object to write to
+    /// @param index_name The field name for the index
+    /// @param idx The index value to store
     static void push_index(json& archive, std::string_view index_name, unsigned int idx)
     {
-        archive[index_name.data()] = idx;
-    };
+        archive[std::string(index_name)] = idx;
+    }
 
-    static auto pop_index(json& archive, std::string_view index_name)
+    /// @brief Retrieve container index from JSON
+    /// @param archive The JSON object to read from
+    /// @param index_name The field name for the index
+    /// @return The stored index value
+    [[nodiscard]] static auto pop_index(json& archive, std::string_view index_name)
     {
-        return archive[index_name.data()].get<unsigned int>();
-    };
+        return archive[std::string(index_name)].get<unsigned int>();
+    }
 
-    static const auto& get(const json& archive, std::string_view idx)
+    /// @brief Get JSON element by string key (const)
+    /// @param archive The JSON object to read from
+    /// @param idx The key to access
+    /// @return Const reference to the JSON element
+    [[nodiscard]] static const auto& get(const json& archive, std::string_view idx)
     {
-        return archive[idx.data()];
-    };
+        return archive[std::string(idx)];
+    }
 
-    static const auto& get(const json& archive, size_t idx) { return archive[idx]; };
+    /// @brief Get JSON element by numeric index (const)
+    /// @param archive The JSON object to read from
+    /// @param idx The index to access
+    /// @return Const reference to the JSON element
+    [[nodiscard]] static const auto& get(const json& archive, size_t idx)
+    {
+        return archive[idx];
+    }
 
-    static auto& get(json& archive, std::string_view idx) { return archive[idx.data()]; };
+    /// @brief Get JSON element by string key (mutable)
+    /// @param archive The JSON object to modify
+    /// @param idx The key to access
+    /// @return Mutable reference to the JSON element
+    static auto& get(json& archive, std::string_view idx)
+    {
+        return archive[std::string(idx)];
+    }
 
-    static auto& get(json& archive, size_t idx) { return archive[idx]; };
+    /// @brief Get JSON element by numeric index (mutable)
+    /// @param archive The JSON object to modify
+    /// @param idx The index to access
+    /// @return Mutable reference to the JSON element
+    static auto& get(json& archive, size_t idx)
+    {
+        return archive[idx];
+    }
 
-    static void resize(json& /*archive*/, size_t /*size*/) { ; };
+    /// @brief Resize JSON array (no-op for JSON objects)
+    /// @param archive The JSON object (unused)
+    /// @param size The desired size (unused)
+    static void resize([[maybe_unused]] json& archive, [[maybe_unused]] size_t size)
+    {
+        // JSON arrays are dynamically sized; no explicit resize needed
+    }
 
-    static auto size(json& archive) { return archive.size(); };
+    /// @brief Get the size of a JSON array or object
+    /// @param archive The JSON object to query
+    /// @return The number of elements
+    [[nodiscard]] static auto size(const json& archive)
+    {
+        return archive.size();
+    }
 
-    static auto registery() { return serialization::JsonSerializationRegistry(); }
+    /// @brief Get the JSON serialization registry
+    /// @return Pointer to the global JSON serialization registry
+    [[nodiscard]] static auto registry()
+    {
+        return serialization::JsonSerializationRegistry();
+    }
 };
 
-//-----------------------------------------------------------------------------
+//=============================================================================
+// Binary Stream Archiver Specialization
+//=============================================================================
+
+/// @brief Specialization of archiver_wrapper for binary stream archives
+/// Provides serialization/deserialization operations for binary format
 template <>
 struct archiver_wrapper<serialization::multi_process_stream>
 {
-    template <typename T, std::enable_if_t<is_base_serializable<T>::value, int> = 0>
+    /// @brief Serialize a base-serializable type to binary stream
+    /// @tparam T Must satisfy is_base_serializable concept
+    /// @param archive The binary stream to write to
+    /// @param obj The object to serialize
+    template <typename T>
+        requires is_base_serializable<T>::value
     static void push(serialization::multi_process_stream& archive, const T& obj)
     {
         if constexpr (serialization::has_float<T>::value)
-            archive << static_cast<double>(obj.as_float());
-        else if constexpr (std::is_same<T, std::monostate>::value)
         {
-            // monostate is an empty type - just write a marker byte
+            archive << static_cast<double>(obj.as_float());
+        }
+        else if constexpr (std::is_same_v<T, std::monostate>)
+        {
+            // monostate is an empty type - write a marker byte
             archive << static_cast<unsigned char>(0);
         }
-        else if constexpr (std::is_enum<T>::value)
+        else if constexpr (std::is_enum_v<T>)
+        {
             archive << static_cast<int>(obj);
-        else if constexpr (
-            std::is_same<T, serialization::tenor>::value ||
-            std::is_same<T, serialization::key>::value)
+        }
+        else if constexpr (std::is_same_v<T, serialization::tenor> ||
+                           std::is_same_v<T, serialization::key>)
+        {
             archive << obj.to_string();
+        }
         else
+        {
             archive << obj;
-    };
+        }
+    }
 
-    template <typename T, std::enable_if_t<is_base_serializable<T>::value, int> = 0>
+    /// @brief Deserialize a base-serializable type from binary stream
+    /// @tparam T Must satisfy is_base_serializable concept
+    /// @param archive The binary stream to read from
+    /// @param obj The object to deserialize into
+    template <typename T>
+        requires is_base_serializable<T>::value
     static void pop(serialization::multi_process_stream& archive, T& obj)
     {
         if constexpr (serialization::has_float<T>::value)
@@ -234,91 +365,128 @@ struct archiver_wrapper<serialization::multi_process_stream>
             archive >> d;
             obj = d;
         }
-        else if constexpr (std::is_same<T, std::monostate>::value)
+        else if constexpr (std::is_same_v<T, std::monostate>)
         {
-            // monostate is an empty type - just read and discard the marker byte
+            // monostate is an empty type - read and discard the marker byte
             unsigned char marker;
             archive >> marker;
             obj = std::monostate{};
         }
-        else if constexpr (std::is_enum<T>::value)
+        else if constexpr (std::is_enum_v<T>)
         {
             int i = 0;
             archive >> i;
             obj = static_cast<T>(i);
         }
-        else if constexpr (
-            std::is_same<T, serialization::tenor>::value ||
-            std::is_same<T, serialization::key>::value)
+        else if constexpr (std::is_same_v<T, serialization::tenor> ||
+                           std::is_same_v<T, serialization::key>)
         {
             std::string s;
             archive >> s;
             obj = s;
         }
         else
+        {
             archive >> obj;
-    };
+        }
+    }
 
-    static void push_class_name(
-        serialization::multi_process_stream& archive, const std::string& name)
+    /// @brief Store class type information in binary stream
+    /// @param archive The binary stream to write to
+    /// @param name The class name to store
+    static void push_class_name(serialization::multi_process_stream& archive,
+                                const std::string& name)
     {
         archive << name;
-    };
+    }
 
-    static auto pop_class_name(serialization::multi_process_stream& archive)
+    /// @brief Retrieve class type information from binary stream
+    /// @param archive The binary stream to read from
+    /// @return The stored class name
+    [[nodiscard]] static auto pop_class_name(serialization::multi_process_stream& archive)
     {
         std::string ret;
         archive >> ret;
         return ret;
-    };
+    }
 
-    static void push_index(
-        serialization::multi_process_stream& archive,
-        std::string_view /*index_name*/,
-        unsigned int idx)
+    /// @brief Store container index in binary stream
+    /// @param archive The binary stream to write to
+    /// @param index_name Unused (for API compatibility with JSON archiver)
+    /// @param idx The index value to store
+    static void push_index(serialization::multi_process_stream& archive,
+                           [[maybe_unused]] std::string_view index_name,
+                           unsigned int idx)
     {
         archive << idx;
-    };
+    }
 
-    static auto pop_index(
-        serialization::multi_process_stream& archive, std::string_view /*index_name*/)
+    /// @brief Retrieve container index from binary stream
+    /// @param archive The binary stream to read from
+    /// @param index_name Unused (for API compatibility with JSON archiver)
+    /// @return The stored index value
+    [[nodiscard]] static auto pop_index(serialization::multi_process_stream& archive,
+                                        [[maybe_unused]] std::string_view index_name)
     {
         unsigned int idx;
         archive >> idx;
         return idx;
-    };
+    }
 
-    static const auto& get(
-        const serialization::multi_process_stream& archive, std::string_view /*idx*/)
+    /// @brief Get binary stream reference by string key (const)
+    /// @param archive The binary stream to read from
+    /// @param idx Unused (for API compatibility with JSON archiver)
+    /// @return Const reference to the binary stream
+    [[nodiscard]] static const auto& get(const serialization::multi_process_stream& archive,
+                                         [[maybe_unused]] std::string_view idx)
     {
         return archive;
-    };
+    }
 
-    static auto& get(serialization::multi_process_stream& archive, std::string_view /*idx*/)
+    /// @brief Get binary stream reference by string key (mutable)
+    /// @param archive The binary stream to modify
+    /// @param idx Unused (for API compatibility with JSON archiver)
+    /// @return Mutable reference to the binary stream
+    static auto& get(serialization::multi_process_stream& archive,
+                     [[maybe_unused]] std::string_view idx)
     {
         return archive;
-    };
+    }
 
-    static auto& get(serialization::multi_process_stream& archive, size_t /*idx*/)
+    /// @brief Get binary stream reference by numeric index (mutable)
+    /// @param archive The binary stream to modify
+    /// @param idx Unused (for API compatibility with JSON archiver)
+    /// @return Mutable reference to the binary stream
+    static auto& get(serialization::multi_process_stream& archive,
+                     [[maybe_unused]] size_t idx)
     {
         return archive;
-    };
+    }
 
+    /// @brief Write container size to binary stream
+    /// @param archive The binary stream to write to
+    /// @param n The size value to store
     static void resize(serialization::multi_process_stream& archive, size_t n)
     {
         archive << static_cast<unsigned int>(n);
-    };
+    }
 
-    static auto size(serialization::multi_process_stream& archive)
+    /// @brief Read container size from binary stream
+    /// @param archive The binary stream to read from
+    /// @return The stored size value
+    [[nodiscard]] static auto size(serialization::multi_process_stream& archive)
     {
         unsigned int n;
         archive >> n;
         return static_cast<size_t>(n);
-    };
+    }
 
-    static auto registery() { return serialization::BinarySerializationRegistry(); }
+    /// @brief Get the binary serialization registry
+    /// @return Pointer to the global binary serialization registry
+    [[nodiscard]] static auto registry()
+    {
+        return serialization::BinarySerializationRegistry();
+    }
 };
 
 }  // namespace serialization
-
-#endif

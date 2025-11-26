@@ -711,9 +711,9 @@ struct serializer_impl<Archiver, T>
         else
         {
             using archiver_type = std::remove_cv_t<Archiver>;
-            if (archiver_wrapper<archiver_type>::registery()->Has(class_name))
+            if (archiver_wrapper<archiver_type>::registry()->Has(class_name))
             {
-                archiver_wrapper<archiver_type>::registery()->run(
+                archiver_wrapper<archiver_type>::registry()->run(
                     class_name, archive, const_cast<element_type*>(object.get()), false);
             }
         }
@@ -730,9 +730,9 @@ struct serializer_impl<Archiver, T>
             return;
         }
 
-        if (archiver_wrapper<archiver_type>::registery()->Has(class_name))
+        if (archiver_wrapper<archiver_type>::registry()->Has(class_name))
         {
-            archiver_wrapper<archiver_type>::registery()->run(class_name, archive, &object, true);
+            archiver_wrapper<archiver_type>::registry()->run(class_name, archive, &object, true);
             return;
         }
 
