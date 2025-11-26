@@ -128,7 +128,8 @@ inline constexpr int SERIALIZATION_COMPILE_TIME_MAX_GPUS = 16;
 
 //------------------------------------------------------------------------
 #ifdef NDEBUG
-#define SERIALIZATION_SIMD_RETURN_TYPE SERIALIZATION_FORCE_INLINE static void SERIALIZATION_VECTORCALL
+#define SERIALIZATION_SIMD_RETURN_TYPE \
+    SERIALIZATION_FORCE_INLINE static void SERIALIZATION_VECTORCALL
 #else
 #define SERIALIZATION_SIMD_RETURN_TYPE static void
 #endif
@@ -199,7 +200,7 @@ inline constexpr int SERIALIZATION_COMPILE_TIME_MAX_GPUS = 16;
 #define MACRO_CORE_TYPE_ID_NAME(x) typeid(x).name()
 
 //----------------------------------------------------------------------------
-#define SERIALIZATION_DELETE_CLASS(type)            \
+#define SERIALIZATION_DELETE_CLASS(type)     \
     type()                         = delete; \
     type(const type&)              = delete; \
     type& operator=(const type& a) = delete; \
@@ -207,16 +208,16 @@ inline constexpr int SERIALIZATION_COMPILE_TIME_MAX_GPUS = 16;
     type& operator=(type&&)        = delete; \
     ~type()                        = delete;
 
-#define SERIALIZATION_DELETE_COPY_AND_MOVE(type)    \
-private:                                     \
-    type(const type&)              = delete; \
-    type& operator=(const type& a) = delete; \
-    type(type&&)                   = delete; \
-    type& operator=(type&&)        = delete; \
-                                             \
+#define SERIALIZATION_DELETE_COPY_AND_MOVE(type) \
+private:                                         \
+    type(const type&)              = delete;     \
+    type& operator=(const type& a) = delete;     \
+    type(type&&)                   = delete;     \
+    type& operator=(type&&)        = delete;     \
+                                                 \
 public:
 
-#define SERIALIZATION_DELETE_COPY(type)             \
+#define SERIALIZATION_DELETE_COPY(type)      \
     type(const type&)              = delete; \
     type& operator=(const type& a) = delete;
 
@@ -342,7 +343,8 @@ using void_t = std::void_t<>;
 //----------------------------------------------------------------------------
 // Thread safety - exclusive locks required
 #if SERIALIZATION_HAVE_ATTRIBUTE(exclusive_locks_required)
-#define SERIALIZATION_EXCLUSIVE_LOCKS_REQUIRED(...) __attribute__((exclusive_locks_required(__VA_ARGS__)))
+#define SERIALIZATION_EXCLUSIVE_LOCKS_REQUIRED(...) \
+    __attribute__((exclusive_locks_required(__VA_ARGS__)))
 #else
 #define SERIALIZATION_EXCLUSIVE_LOCKS_REQUIRED(...)
 #endif

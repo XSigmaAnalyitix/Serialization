@@ -11,7 +11,7 @@ namespace serialization
 {
 namespace access
 {
-struct serilizer
+struct serializer
 {
     /**
      * Allows placement construction of types.

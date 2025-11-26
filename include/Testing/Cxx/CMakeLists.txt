@@ -54,4 +54,11 @@ foreach(TEST_FILE ${TEST_FILES})
         CXX_STANDARD_REQUIRED ON
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>"
     )
+
+    # Register the test with CTest
+    add_test(
+        NAME ${TEST_NAME}
+        COMMAND ${TEST_NAME}
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIG>"
+    )
 endforeach()

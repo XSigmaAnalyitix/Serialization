@@ -5,17 +5,16 @@
 #include <cstddef>
 #include <functional>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <string_view>
 #include <type_traits>
 
-#include "util/export.h"
 #include "common/serialization_type_traits.h"
+#include "util/export.h"
 #include "util/multi_process_stream.h"
 #include "util/registry.h"
 #include "util/string_util.h"
-
-#include <nlohmann/json.hpp>
 
 #define SERIALIZATION_LOG_WARNING(x) std::cerr << "Warning: " << x << std::endl;
 
@@ -93,7 +92,8 @@ struct archiver_wrapper<json>
             to_json(archive, obj);
         }
         else if constexpr (
-            std::is_same<T, serialization::tenor>::value || std::is_same<T, serialization::key>::value)
+            std::is_same<T, serialization::tenor>::value ||
+            std::is_same<T, serialization::key>::value)
         {
             archive = obj.to_string();
         }
@@ -119,7 +119,8 @@ struct archiver_wrapper<json>
             from_json(archive, obj);
         }
         else if constexpr (
-            std::is_same<T, serialization::tenor>::value || std::is_same<T, serialization::key>::value)
+            std::is_same<T, serialization::tenor>::value ||
+            std::is_same<T, serialization::key>::value)
         {
             obj = archive.get<std::string>();
         }
@@ -199,7 +200,8 @@ struct archiver_wrapper<serialization::multi_process_stream>
         else if constexpr (std::is_enum<T>::value)
             archive << static_cast<int>(obj);
         else if constexpr (
-            std::is_same<T, serialization::tenor>::value || std::is_same<T, serialization::key>::value)
+            std::is_same<T, serialization::tenor>::value ||
+            std::is_same<T, serialization::key>::value)
             archive << obj.to_string();
         else
             archive << obj;
@@ -221,7 +223,8 @@ struct archiver_wrapper<serialization::multi_process_stream>
             obj = static_cast<T>(i);
         }
         else if constexpr (
-            std::is_same<T, serialization::tenor>::value || std::is_same<T, serialization::key>::value)
+            std::is_same<T, serialization::tenor>::value ||
+            std::is_same<T, serialization::key>::value)
         {
             std::string s;
             archive >> s;
@@ -231,7 +234,8 @@ struct archiver_wrapper<serialization::multi_process_stream>
             archive >> obj;
     };
 
-    static void push_class_name(serialization::multi_process_stream& archive, const std::string& name)
+    static void push_class_name(
+        serialization::multi_process_stream& archive, const std::string& name)
     {
         archive << name;
     };
@@ -244,19 +248,23 @@ struct archiver_wrapper<serialization::multi_process_stream>
     };
 
     static void push_index(
-        serialization::multi_process_stream& archive, std::string_view /*index_name*/, unsigned int idx)
+        serialization::multi_process_stream& archive,
+        std::string_view /*index_name*/,
+        unsigned int idx)
     {
         archive << idx;
     };
 
-    static auto pop_index(serialization::multi_process_stream& archive, std::string_view /*index_name*/)
+    static auto pop_index(
+        serialization::multi_process_stream& archive, std::string_view /*index_name*/)
     {
         unsigned int idx;
         archive >> idx;
         return idx;
     };
 
-    static const auto& get(const serialization::multi_process_stream& archive, std::string_view /*idx*/)
+    static const auto& get(
+        const serialization::multi_process_stream& archive, std::string_view /*idx*/)
     {
         return archive;
     };
@@ -266,7 +274,10 @@ struct archiver_wrapper<serialization::multi_process_stream>
         return archive;
     };
 
-    static auto& get(serialization::multi_process_stream& archive, size_t /*idx*/) { return archive; };
+    static auto& get(serialization::multi_process_stream& archive, size_t /*idx*/)
+    {
+        return archive;
+    };
 
     static void resize(serialization::multi_process_stream& archive, size_t n)
     {

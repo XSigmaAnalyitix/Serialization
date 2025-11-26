@@ -7,75 +7,74 @@
  * register object creators during program initialization time.
  */
 
- // NB: This Registry works poorly when you have other namespaces.
- // Make all macro invocations from inside the at namespace.
+// NB: This Registry works poorly when you have other namespaces.
+// Make all macro invocations from inside the at namespace.
 #include <functional>
 #include <mutex>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #include "util/macros.h"
 
-
 namespace serialization
 {
-	template <class KeyType, typename Function>
-	class Registry
-	{
-	public:
-		Registry() = default;
+template <class KeyType, typename Function>
+class Registry
+{
+public:
+    Registry() = default;
 
-		void Register(const KeyType& key, Function f)
-		{
-			std::lock_guard<std::mutex> lock(register_mutex_);
-			registry_[key] = f;
-		}
+    void Register(const KeyType& key, Function f)
+    {
+        std::lock_guard<std::mutex> lock(register_mutex_);
+        registry_[key] = f;
+    }
 
-		inline bool Has(const KeyType& key) { return (registry_.count(key) != 0); }
+    inline bool Has(const KeyType& key) { return (registry_.count(key) != 0); }
 
-		template <class Arg1, class Arg2, class... Args>
-		auto run(const KeyType& key, Arg1& arg1, Arg2* arg2, Args... args)
-		{
-			return registry_[key](arg1, arg2, args...);
-		}
+    template <class Arg1, class Arg2, class... Args>
+    auto run(const KeyType& key, Arg1& arg1, Arg2* arg2, Args... args)
+    {
+        return registry_[key](arg1, arg2, args...);
+    }
 
-		template <class Arg1, class Arg2, class... Args>
-		auto run(const KeyType& key, Arg1& arg1, Arg2& arg2, Args... args)
-		{
-			return registry_[key](arg1, arg2, args...);
-		}
+    template <class Arg1, class Arg2, class... Args>
+    auto run(const KeyType& key, Arg1& arg1, Arg2& arg2, Args... args)
+    {
+        return registry_[key](arg1, arg2, args...);
+    }
 
-		/**
+    /**
 		 * Returns the keys currently registered as a std::vector.
 		 */
-		std::vector<KeyType> Keys() const
-		{
-			std::vector<KeyType> keys;
-			for (const auto& it : registry_)
-			{
-				keys.push_back(it.first);
-			}
-			return keys;
-		}
+    std::vector<KeyType> Keys() const
+    {
+        std::vector<KeyType> keys;
+        for (const auto& it : registry_)
+        {
+            keys.push_back(it.first);
+        }
+        return keys;
+    }
 
-		Registry(const Registry&) = delete;
-		Registry& operator=(const Registry& /*rhs*/) = delete;
+    Registry(const Registry&)                    = delete;
+    Registry& operator=(const Registry& /*rhs*/) = delete;
 
-	private:
-		std::unordered_map<KeyType, Function> registry_{};
-		std::mutex                    register_mutex_;
-	};
+private:
+    std::unordered_map<KeyType, Function> registry_{};
+    std::mutex                            register_mutex_;
+};
 
-	template <class KeyType, typename Function>
-	class Registerer
-	{
-	public:
-		explicit Registerer(const KeyType& key, Registry<KeyType, Function>* registry, Function method)
-		{
-			registry->Register(key, method);
-		}
-	};
-	/**
+template <class KeyType, typename Function>
+class Registerer
+{
+public:
+    explicit Registerer(const KeyType& key, Registry<KeyType, Function>* registry, Function method)
+    {
+        registry->Register(key, method);
+    }
+};
+/**
 	 * @brief A template class that allows one to register classes by keys.
 	 *
 	 * The keys are usually a std::string specifying the name, but can be anything
@@ -85,74 +84,74 @@ namespace serialization
 	 * helper macros below to declare specific registries as well as registering
 	 * objects.
 	 */
-	namespace creator
-	{
-		template <class KeyType, class ReturnType, class... Args>
-		class Registry
-		{
-		public:
-			using Function = std::function<ReturnType(Args...)>;
+namespace creator
+{
+template <class KeyType, class ReturnType, class... Args>
+class Registry
+{
+public:
+    using Function = std::function<ReturnType(Args...)>;
 
-			Registry() = default;
+    Registry() = default;
 
-			void Register(const KeyType& key, Function f)
-			{
-				std::lock_guard<std::mutex> lock(register_mutex_);
-				registry_[key] = f;
-			}
+    void Register(const KeyType& key, Function f)
+    {
+        std::lock_guard<std::mutex> lock(register_mutex_);
+        registry_[key] = f;
+    }
 
-			inline bool Has(const KeyType& key) { return (registry_.count(key) != 0); }
+    inline bool Has(const KeyType& key) { return (registry_.count(key) != 0); }
 
-			ReturnType run(const KeyType& key, Args... args)
-			{
-				if (registry_.count(key) == 0)
-				{
-					// Returns nullptr if the key is not registered.
-					return nullptr;
-				}
-				return registry_[key](args...);
-			}
+    ReturnType run(const KeyType& key, Args... args)
+    {
+        if (registry_.count(key) == 0)
+        {
+            // Returns nullptr if the key is not registered.
+            return nullptr;
+        }
+        return registry_[key](args...);
+    }
 
-			/**
+    /**
 			 * Returns the keys currently registered as a std::vector.
 			 */
-			std::vector<KeyType> Keys() const
-			{
-				std::vector<KeyType> keys;
-				for (const auto& it : registry_)
-				{
-					keys.push_back(it.first);
-				}
-				return keys;
-			}
+    std::vector<KeyType> Keys() const
+    {
+        std::vector<KeyType> keys;
+        for (const auto& it : registry_)
+        {
+            keys.push_back(it.first);
+        }
+        return keys;
+    }
 
-			Registry(const Registry&) = delete;
-			Registry& operator=(const Registry& /*rhs*/) = delete;
+    Registry(const Registry&)                    = delete;
+    Registry& operator=(const Registry& /*rhs*/) = delete;
 
-		private:
-			std::unordered_map<KeyType, Function> registry_{};
-			std::mutex                    register_mutex_;
-		};
+private:
+    std::unordered_map<KeyType, Function> registry_{};
+    std::mutex                            register_mutex_;
+};
 
-		template <class KeyType, class ReturnType, class... Args>
-		class Registerer
-		{
-		public:
-			explicit Registerer(
-				const KeyType& key,
-				Registry<KeyType, ReturnType, Args...>* registry,
-				typename Registry<KeyType, ReturnType, Args...>::Function method)
-			{
-				registry->Register(key, method);
-			}
+template <class KeyType, class ReturnType, class... Args>
+class Registerer
+{
+public:
+    explicit Registerer(
+        const KeyType&                                            key,
+        Registry<KeyType, ReturnType, Args...>*                   registry,
+        typename Registry<KeyType, ReturnType, Args...>::Function method)
+    {
+        registry->Register(key, method);
+    }
 
-			template <class DerivedType>
-			static ReturnType DefaultCreator(Args... args)
-			{
-				return ReturnType(new DerivedType(args...));
-			}
-		};
-	}  // namespace creator
+    template <class DerivedType>
+    static ReturnType DefaultCreator(Args... args)
+    {
+        return ReturnType(new DerivedType(args...));
+    }
+};
+}  // namespace creator
 
 #define SERIALIZATION_DECLARE_FUNCTION_REGISTRY(RegistryName, Function) \
     serialization::Registry<std::string, Function>* RegistryName();     \
@@ -160,9 +159,9 @@ namespace serialization
 
 #define SERIALIZATION_DEFINE_FUNCTION_REGISTRY(RegistryName, Function)                \
     serialization::Registry<std::string, Function>* RegistryName()                    \
-    {                                                                          \
+    {                                                                                 \
         static auto* registry = new serialization::Registry<std::string, Function>(); \
-        return registry;                                                       \
+        return registry;                                                              \
     }
 
 #define SERIALIZATION_REGISTER_FUNCTION(RegistryName, type, Function)                   \
@@ -171,15 +170,15 @@ namespace serialization
 
 #define SERIALIZATION_DECLARE_TYPED_REGISTRY(RegistryName, KeyType, ObjectType, PtrType, ...)      \
     serialization::creator::Registry<KeyType, PtrType<ObjectType>, ##__VA_ARGS__>* RegistryName(); \
-    using Registerer##RegistryName =                                                        \
+    using Registerer##RegistryName =                                                               \
         serialization::creator::Registerer<KeyType, PtrType<ObjectType>, ##__VA_ARGS__>;
 
 #define SERIALIZATION_DEFINE_TYPED_REGISTRY(RegistryName, KeyType, ObjectType, PtrType, ...)      \
     serialization::creator::Registry<KeyType, PtrType<ObjectType>, ##__VA_ARGS__>* RegistryName() \
-    {                                                                                      \
-        static auto* registry =                                                            \
+    {                                                                                             \
+        static auto* registry =                                                                   \
             new serialization::creator::Registry<KeyType, PtrType<ObjectType>, ##__VA_ARGS__>();  \
-        return registry;                                                                   \
+        return registry;                                                                          \
     }
 
 // The __VA_ARGS__ below allows one to specify a templated

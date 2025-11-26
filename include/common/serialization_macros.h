@@ -351,56 +351,56 @@ namespace serialization
 #define REFLECTION_META_DATA_IMPL(T, ...)
 #endif
 
-#define DEFINE_WRAPING_METHODES(T, ...)                                                           \
-public:                                                                                           \
-    __VA_ARGS__ static void write_to_json(const std::string& file_name, const ptr_const<T>& rhs); \
-    __VA_ARGS__ static ptr_const<serialization::T> read_from_json(const std::string& file_name);         \
-    __VA_ARGS__ static void                 write_to_binary(                                      \
-                        const std::string& file_name, const ptr_const<T>& rhs);                   \
-    __VA_ARGS__ static ptr_const<serialization::T> read_from_binary(const std::string& file_name);       \
-    __VA_ARGS__ static std::string          printf(const ptr_const<T>& rhs);                      \
-                                                                                                  \
+#define DEFINE_WRAPING_METHODES(T, ...)                                                            \
+public:                                                                                            \
+    __VA_ARGS__ static void write_to_json(const std::string& file_name, const ptr_const<T>& rhs);  \
+    __VA_ARGS__ static ptr_const<serialization::T> read_from_json(const std::string& file_name);   \
+    __VA_ARGS__ static void                        write_to_binary(                                \
+                               const std::string& file_name, const ptr_const<T>& rhs);             \
+    __VA_ARGS__ static ptr_const<serialization::T> read_from_binary(const std::string& file_name); \
+    __VA_ARGS__ static std::string                 printf(const ptr_const<T>& rhs);                \
+                                                                                                   \
 private:
 
-#define SERIALIZATION_SERIALIZATION_METHODES(T)                                           \
-    void T::write_to_json(const std::string& file_name, const ptr_const<T>& rhs)   \
-    {                                                                              \
-        serialization::serialization::access::write_to_json<T>(file_name, rhs);           \
-    };                                                                             \
-    ptr_const<serialization::T> T::read_from_json(const std::string& file_name)           \
-    {                                                                              \
-        return serialization::serialization::access::read_from_json<T>(file_name);        \
-    };                                                                             \
-    void T::write_to_binary(const std::string& file_name, const ptr_const<T>& rhs) \
-    {                                                                              \
-        serialization::serialization::access::write_to_binary<T>(file_name, rhs);         \
-    };                                                                             \
-    ptr_const<serialization::T> T::read_from_binary(const std::string& file_name)         \
-    {                                                                              \
-        return serialization::serialization::access::read_from_binary<T>(file_name);      \
-    };                                                                             \
-    std::string T::printf(const ptr_const<T>& rhs)                                 \
-    {                                                                              \
-        return serialization::serialization::access::print<T>(rhs);                       \
+#define SERIALIZATION_SERIALIZATION_METHODES(T)                                      \
+    void T::write_to_json(const std::string& file_name, const ptr_const<T>& rhs)     \
+    {                                                                                \
+        serialization::serialization::access::write_to_json<T>(file_name, rhs);      \
+    };                                                                               \
+    ptr_const<serialization::T> T::read_from_json(const std::string& file_name)      \
+    {                                                                                \
+        return serialization::serialization::access::read_from_json<T>(file_name);   \
+    };                                                                               \
+    void T::write_to_binary(const std::string& file_name, const ptr_const<T>& rhs)   \
+    {                                                                                \
+        serialization::serialization::access::write_to_binary<T>(file_name, rhs);    \
+    };                                                                               \
+    ptr_const<serialization::T> T::read_from_binary(const std::string& file_name)    \
+    {                                                                                \
+        return serialization::serialization::access::read_from_binary<T>(file_name); \
+    };                                                                               \
+    std::string T::printf(const ptr_const<T>& rhs)                                   \
+    {                                                                                \
+        return serialization::serialization::access::print<T>(rhs);                  \
     };
 
 #define DEFINE_WRAPING_METHODES_TEMPLATE(T)                                            \
 public:                                                                                \
     static void write_to_json(const std::string& file_name, const ptr_const<T>& rhs)   \
     {                                                                                  \
-        serialization::serialization::access::write_to_json<T>(file_name, rhs);               \
+        serialization::serialization::access::write_to_json<T>(file_name, rhs);        \
     };                                                                                 \
     static ptr_const<T> read_from_json(const std::string& file_name)                   \
     {                                                                                  \
-        return serialization::serialization::access::read_from_json<T>(file_name);            \
+        return serialization::serialization::access::read_from_json<T>(file_name);     \
     };                                                                                 \
     static void write_to_binary(const std::string& file_name, const ptr_const<T>& rhs) \
     {                                                                                  \
-        serialization::serialization::access::write_to_binary<T>(file_name, rhs);             \
+        serialization::serialization::access::write_to_binary<T>(file_name, rhs);      \
     };                                                                                 \
     static ptr_const<T> read_from_binary(const std::string& file_name)                 \
     {                                                                                  \
-        return serialization::serialization::access::read_from_binary<T>(file_name);          \
+        return serialization::serialization::access::read_from_binary<T>(file_name);   \
     };                                                                                 \
                                                                                        \
 private:
@@ -408,23 +408,23 @@ private:
 #define MAKE_META_DATA(T, N, ...) \
     REFLECTION_META_DATA_IMPL(T, MAKE_T_ARG_LIST(N, REFLECTION, T, __VA_ARGS__))
 
-#define SERIALIZATION_SERIALIZATION(T, ...)                            \
+#define SERIALIZATION_SERIALIZATION(T, ...)                     \
     DEFINE_WRAPING_METHODES(T)                                  \
     MAKE_META_DATA(T, GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__); \
-    friend struct serialization::access::serilizer;
+    friend struct serialization::access::serializer;
 
-#define SERIALIZATION_MACRO(EXPORT, T, ...)             \
+#define SERIALIZATION_MACRO(EXPORT, T, ...)                     \
     DEFINE_WRAPING_METHODES(T, EXPORT)                          \
     MAKE_META_DATA(T, GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__); \
-    friend struct serialization::access::serilizer;
+    friend struct serialization::access::serializer;
 
 #define SERIALIZATION_SERIALIZATION_EXPORT_EMPTY(EXPORT, T) \
-    DEFINE_WRAPING_METHODES(T, EXPORT)               \
-    REFLECTION_META_DATA_IMPL_EMPTY(T);              \
-    friend struct serialization::access::serilizer;
+    DEFINE_WRAPING_METHODES(T, EXPORT)                      \
+    REFLECTION_META_DATA_IMPL_EMPTY(T);                     \
+    friend struct serialization::access::serializer;
 
-#define SERIALIZATION_SERIALIZATION_TEMPLATE(T, ...)                   \
+#define SERIALIZATION_SERIALIZATION_TEMPLATE(T, ...)            \
     DEFINE_WRAPING_METHODES_TEMPLATE(T)                         \
     MAKE_META_DATA(T, GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__); \
-    friend struct serialization::access::serilizer;
+    friend struct serialization::access::serializer;
 }  // namespace serialization

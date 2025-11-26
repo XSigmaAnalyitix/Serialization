@@ -5,26 +5,25 @@
 
 // Platform detection
 #if defined(_WIN32) || defined(_WIN64)
-    #define SERIALIZATION_PLATFORM_WINDOWS
+#define SERIALIZATION_PLATFORM_WINDOWS
 #elif defined(__linux__)
-    #define SERIALIZATION_PLATFORM_LINUX
+#define SERIALIZATION_PLATFORM_LINUX
 #elif defined(__APPLE__)
-    #define SERIALIZATION_PLATFORM_MACOS
+#define SERIALIZATION_PLATFORM_MACOS
 #endif
 
 // Compiler detection
 #if defined(_MSC_VER)
-    #define SERIALIZATION_COMPILER_MSVC
+#define SERIALIZATION_COMPILER_MSVC
 #elif defined(__clang__)
-    #define SERIALIZATION_COMPILER_CLANG
+#define SERIALIZATION_COMPILER_CLANG
 #elif defined(__GNUC__)
-    #define SERIALIZATION_COMPILER_GCC
+#define SERIALIZATION_COMPILER_GCC
 #endif
 
 // Build configuration
 #ifdef NDEBUG
-    #define SERIALIZATION_BUILD_RELEASE
+#define SERIALIZATION_BUILD_RELEASE
 #else
-    #define SERIALIZATION_BUILD_DEBUG
+#define SERIALIZATION_BUILD_DEBUG
 #endif
-

@@ -182,7 +182,7 @@ private:
     };
 
     serializationInternals* internals_;
-    unsigned char    endianness_;
+    unsigned char           endianness_;
     enum
     {
         BigEndian,

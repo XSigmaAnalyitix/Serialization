@@ -1,7 +1,5 @@
 #pragma once
 
-#ifndef __SERIALIZATION_WRAP__
-
 #include <array>        // for array
 #include <cstdint>      // for uint32_t, uint64_t, int64_t
 #include <iosfwd>       // for size_t
@@ -196,7 +194,7 @@ struct has_reflection : std::false_type
 };
 
 template <typename Type>
-struct has_reflection<Type, void_t<decltype(access::serilizer::tuple<Type>())>> : std::true_type
+struct has_reflection<Type, void_t<decltype(access::serializer::tuple<Type>())>> : std::true_type
 {
 };
 
@@ -242,8 +240,25 @@ struct has_random_access<
 {
 };
 
+//----------------------------------------------------------------------------
+template <typename T, typename = void>
+struct has_emplace_back : std::false_type
+{
+};
+
+template <typename T>
+struct has_emplace_back<
+    T,
+    std::void_t<decltype(std::declval<T>().emplace_back())>>
+    : std::true_type
+{
+};
+
+// Helper variable template for easier usage
+template <typename T>
+inline constexpr bool has_emplace_back_v = has_emplace_back<T>::value;
+
 // Helper variable template for easier usage
 template <typename T>
 inline constexpr bool has_random_access_v = has_random_access<T>::value;
 }  // namespace serialization
-#endif
