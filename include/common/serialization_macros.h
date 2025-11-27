@@ -10,203 +10,203 @@ namespace serialization
 /* arg list expand macro, now support 120 args */
 #define MAKE_T_ARG_LIST_1(op, T, arg, ...) op(T, arg)
 #define MAKE_T_ARG_LIST_2(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_1(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_1(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_3(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_2(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_2(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_4(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_3(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_3(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_5(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_4(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_4(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_6(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_5(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_5(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_7(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_6(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_6(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_8(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_7(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_7(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_9(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_8(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_8(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_10(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_9(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_9(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_11(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_10(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_10(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_12(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_11(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_11(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_13(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_12(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_12(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_14(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_13(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_13(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_15(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_14(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_14(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_16(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_15(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_15(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_17(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_16(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_16(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_18(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_17(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_17(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_19(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_18(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_18(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_20(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_19(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_19(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_21(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_20(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_20(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_22(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_21(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_21(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_23(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_22(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_22(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_24(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_23(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_23(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_25(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_24(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_24(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_26(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_25(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_25(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_27(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_26(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_26(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_28(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_27(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_27(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_29(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_28(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_28(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_30(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_29(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_29(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_31(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_30(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_30(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_32(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_31(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_31(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_33(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_32(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_32(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_34(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_33(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_33(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_35(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_34(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_34(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_36(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_35(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_35(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_37(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_36(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_36(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_38(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_37(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_37(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_39(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_38(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_38(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_40(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_39(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_39(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_41(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_40(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_40(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_42(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_41(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_41(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_43(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_42(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_42(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_44(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_43(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_43(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_45(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_44(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_44(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_46(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_45(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_45(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_47(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_46(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_46(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_48(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_47(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_47(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_49(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_48(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_48(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_50(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_49(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_49(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_51(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_50(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_50(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_52(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_51(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_51(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_53(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_52(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_52(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_54(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_53(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_53(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_55(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_54(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_54(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_56(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_55(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_55(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_57(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_56(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_56(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_58(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_57(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_57(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_59(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_58(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_58(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_60(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_59(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_59(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_61(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_60(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_60(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_62(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_61(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_61(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_63(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_62(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_62(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_64(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_63(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_63(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_65(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_64(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_64(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_66(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_65(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_65(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_67(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_66(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_66(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_68(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_67(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_67(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_69(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_68(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_68(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_70(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_69(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_69(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_71(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_70(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_70(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_72(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_71(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_71(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_73(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_72(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_72(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_74(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_73(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_73(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_75(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_74(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_74(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_76(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_75(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_75(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_77(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_76(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_76(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_78(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_77(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_77(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_79(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_78(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_78(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_80(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_79(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_79(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_81(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_80(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_80(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_82(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_81(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_81(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_83(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_82(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_82(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_84(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_83(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_83(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_85(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_84(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_84(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_86(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_85(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_85(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_87(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_86(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_86(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_88(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_87(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_87(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_89(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_88(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_88(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_90(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_89(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_89(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_91(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_90(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_90(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_92(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_91(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_91(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_93(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_92(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_92(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_94(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_93(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_93(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_95(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_94(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_94(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_96(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_95(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_95(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_97(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_96(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_96(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_98(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_97(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_97(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_99(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_98(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_98(op, T, __VA_ARGS__))
 #define MAKE_T_ARG_LIST_100(op, T, arg, ...) \
-    op(T, arg), MARCO_EXPAND(MAKE_T_ARG_LIST_99(op, T, __VA_ARGS__))
+    op(T, arg), MACRO_EXPAND(MAKE_T_ARG_LIST_99(op, T, __VA_ARGS__))
 
 #define RSEQ_N()                                                                                 \
     100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, \
@@ -320,8 +320,8 @@ namespace serialization
     ...)       \
     N
 
-#define MARCO_EXPAND(...) __VA_ARGS__
-#define APPLY_VARIADIC_MACRO(macro, ...) MARCO_EXPAND(macro(__VA_ARGS__))
+#define MACRO_EXPAND(...) __VA_ARGS__
+#define APPLY_VARIADIC_MACRO(macro, ...) MACRO_EXPAND(macro(__VA_ARGS__))
 
 #define REFLECTION(T, t) reflection(&T::t, #t)
 
@@ -332,10 +332,9 @@ namespace serialization
 #define MAKE_T_ARG_LIST(N, op, T, arg, ...) \
     MACRO_CONCAT(MAKE_T_ARG_LIST, N)(op, T, arg, __VA_ARGS__)
 
-#define GET_ARG_COUNT_INNER(...) MARCO_EXPAND(ARG_N(__VA_ARGS__))
+#define GET_ARG_COUNT_INNER(...) MACRO_EXPAND(ARG_N(__VA_ARGS__))
 #define GET_ARG_COUNT(...) GET_ARG_COUNT_INNER(__VA_ARGS__, RSEQ_N())
 
-#ifndef __SERIALIZATION_WRAP__
 #define REFLECTION_META_DATA_IMPL(T, ...)    \
     constexpr static auto properties()       \
     {                                        \
@@ -347,84 +346,19 @@ namespace serialization
     {                                                      \
         return std::make_tuple(reflection_no_member<T>()); \
     }
-#else
-#define REFLECTION_META_DATA_IMPL(T, ...)
-#endif
-
-#define DEFINE_WRAPING_METHODES(T, ...)                                                            \
-public:                                                                                            \
-    __VA_ARGS__ static void write_to_json(const std::string& file_name, const ptr_const<T>& rhs);  \
-    __VA_ARGS__ static ptr_const<serialization::T> read_from_json(const std::string& file_name);   \
-    __VA_ARGS__ static void                        write_to_binary(                                \
-                               const std::string& file_name, const ptr_const<T>& rhs);             \
-    __VA_ARGS__ static ptr_const<serialization::T> read_from_binary(const std::string& file_name); \
-    __VA_ARGS__ static std::string                 printf(const ptr_const<T>& rhs);                \
-                                                                                                   \
-private:
-
-#define SERIALIZATION_SERIALIZATION_METHODES(T)                                      \
-    void T::write_to_json(const std::string& file_name, const ptr_const<T>& rhs)     \
-    {                                                                                \
-        serialization::serialization::access::write_to_json<T>(file_name, rhs);      \
-    };                                                                               \
-    ptr_const<serialization::T> T::read_from_json(const std::string& file_name)      \
-    {                                                                                \
-        return serialization::serialization::access::read_from_json<T>(file_name);   \
-    };                                                                               \
-    void T::write_to_binary(const std::string& file_name, const ptr_const<T>& rhs)   \
-    {                                                                                \
-        serialization::serialization::access::write_to_binary<T>(file_name, rhs);    \
-    };                                                                               \
-    ptr_const<serialization::T> T::read_from_binary(const std::string& file_name)    \
-    {                                                                                \
-        return serialization::serialization::access::read_from_binary<T>(file_name); \
-    };                                                                               \
-    std::string T::printf(const ptr_const<T>& rhs)                                   \
-    {                                                                                \
-        return serialization::serialization::access::print<T>(rhs);                  \
-    };
-
-#define DEFINE_WRAPING_METHODES_TEMPLATE(T)                                            \
-public:                                                                                \
-    static void write_to_json(const std::string& file_name, const ptr_const<T>& rhs)   \
-    {                                                                                  \
-        serialization::serialization::access::write_to_json<T>(file_name, rhs);        \
-    };                                                                                 \
-    static ptr_const<T> read_from_json(const std::string& file_name)                   \
-    {                                                                                  \
-        return serialization::serialization::access::read_from_json<T>(file_name);     \
-    };                                                                                 \
-    static void write_to_binary(const std::string& file_name, const ptr_const<T>& rhs) \
-    {                                                                                  \
-        serialization::serialization::access::write_to_binary<T>(file_name, rhs);      \
-    };                                                                                 \
-    static ptr_const<T> read_from_binary(const std::string& file_name)                 \
-    {                                                                                  \
-        return serialization::serialization::access::read_from_binary<T>(file_name);   \
-    };                                                                                 \
-                                                                                       \
-private:
 
 #define MAKE_META_DATA(T, N, ...) \
     REFLECTION_META_DATA_IMPL(T, MAKE_T_ARG_LIST(N, REFLECTION, T, __VA_ARGS__))
 
-#define SERIALIZATION_SERIALIZATION(T, ...)                     \
-    DEFINE_WRAPING_METHODES(T)                                  \
+#define SERIALIZATION_MACRO(T, ...)                     \
     MAKE_META_DATA(T, GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__); \
     friend struct serialization::access::serializer;
 
-#define SERIALIZATION_MACRO(EXPORT, T, ...)                     \
-    DEFINE_WRAPING_METHODES(T, EXPORT)                          \
-    MAKE_META_DATA(T, GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__); \
-    friend struct serialization::access::serializer;
-
-#define SERIALIZATION_SERIALIZATION_EXPORT_EMPTY(EXPORT, T) \
-    DEFINE_WRAPING_METHODES(T, EXPORT)                      \
+#define SERIALIZATION_MACRO_EMPTY(T) \
     REFLECTION_META_DATA_IMPL_EMPTY(T);                     \
     friend struct serialization::access::serializer;
 
-#define SERIALIZATION_SERIALIZATION_TEMPLATE(T, ...)            \
-    DEFINE_WRAPING_METHODES_TEMPLATE(T)                         \
+#define SERIALIZATION_MACRO_TEMPLATE(T, ...)            \
     MAKE_META_DATA(T, GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__); \
     friend struct serialization::access::serializer;
 }  // namespace serialization

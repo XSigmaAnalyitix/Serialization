@@ -241,7 +241,7 @@ private:
     Person() = default;   // Required for deserialization
 
     // Add reflection metadata
-    SERIALIZATION_MACRO(SERIALIZATION_API, Person, name_, age_);
+    ç Person, name_, age_);
 
     std::string name_;
     int age_;
@@ -428,7 +428,7 @@ The reflection system allows the library to introspect custom classes at compile
 The macro has the following signature:
 
 ```cpp
-SERIALIZATION_MACRO(export_spec, ClassName, member1, member2, ...)
+SERIALIZATION_MACRO(ClassName, member1, member2, ...)
 ```
 
 **Parameters**:
@@ -473,7 +473,7 @@ private:
 
 ```cpp
     // Add the reflection macro with all members to serialize
-    SERIALIZATION_MACRO(SERIALIZATION_API, BankAccount, owner_, balance_, id_);
+    SERIALIZATION_MACRO( BankAccount, owner_, balance_, id_);
 
     // Member variables
     std::string owner_;
@@ -514,7 +514,7 @@ private:
         std::cout << "Account " << id_ << " deserialized" << std::endl;
     }
 
-    SERIALIZATION_MACRO(SERIALIZATION_API, BankAccount, owner_, balance_, id_);
+    SERIALIZATION_MACRO( BankAccount, owner_, balance_, id_);
 
     std::string owner_;
     double balance_;
@@ -567,7 +567,7 @@ private:
         }
     }
 
-    SERIALIZATION_MACRO(SERIALIZATION_API, Employee,
+    SERIALIZATION_MACRO( Employee,
                        first_name_, last_name_, salary_);
 
     std::string first_name_;
@@ -586,7 +586,7 @@ class UserSession
 {
 private:
     // Only serialize user_id and login_time
-    SERIALIZATION_MACRO(SERIALIZATION_API, UserSession, user_id_, login_time_);
+    SERIALIZATION_MACRO( UserSession, user_id_, login_time_);
 
     int user_id_;
     std::string login_time_;
@@ -643,7 +643,7 @@ protected:
 
     void initialize() {}
 
-    SERIALIZATION_MACRO(SERIALIZATION_API, Shape, x_, y_);
+    SERIALIZATION_MACRO( Shape, x_, y_);
 
     double x_ = 0.0;
     double y_ = 0.0;
@@ -673,7 +673,7 @@ private:
     void initialize() {}
 
     // Include base class members + derived class members
-    SERIALIZATION_MACRO(SERIALIZATION_API, Circle, x_, y_, radius_);
+    SERIALIZATION_MACRO( Circle, x_, y_, radius_);
 
     double radius_ = 0.0;
 
@@ -695,7 +695,7 @@ private:
 
     void initialize() {}
 
-    SERIALIZATION_MACRO(SERIALIZATION_API, Rectangle, x_, y_, width_, height_);
+    SERIALIZATION_MACRO( Rectangle, x_, y_, width_, height_);
 
     double width_ = 0.0;
     double height_ = 0.0;
@@ -917,7 +917,7 @@ private:
         std::cout << "User " << name_ << " loaded" << std::endl;
     }
 
-    SERIALIZATION_MACRO(SERIALIZATION_API, User, id_, name_, roles_);
+    SERIALIZATION_MACRO( User, id_, name_, roles_);
 
     int id_;
     std::string name_;
@@ -954,7 +954,7 @@ private:
     Database() = default;
     void initialize() {}
 
-    SERIALIZATION_MACRO(SERIALIZATION_API, Database, users_);
+    SERIALIZATION_MACRO( Database, users_);
 
     std::vector<User> users_;
 
@@ -994,7 +994,7 @@ private:
     Message() = default;
     void initialize() {}
 
-    SERIALIZATION_MACRO(SERIALIZATION_API, Message, type, payload, metadata);
+    SERIALIZATION_MACRO( Message, type, payload, metadata);
 
     friend struct serialization::access::serializer;
 };

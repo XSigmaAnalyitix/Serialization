@@ -31,7 +31,7 @@ public:
 protected:
     void initialize() {};
     test_serialization() = default;
-    SERIALIZATION_MACRO(SERIALIZATION_API, test_serialization, d_);
+    SERIALIZATION_MACRO( test_serialization, d_);
 
 protected:
     double d_{0};
@@ -47,7 +47,7 @@ public:
 private:
     void initialize() {};
     test_derived_serialization() = default;
-    SERIALIZATION_MACRO(SERIALIZATION_API, test_derived_serialization, d_, n_);
+    SERIALIZATION_MACRO( test_derived_serialization, d_, n_);
 
     std::string n_;
 };

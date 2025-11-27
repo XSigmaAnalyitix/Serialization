@@ -20,17 +20,6 @@ class datetime;
 class key;
 
 //-----------------------------------------------------------------------------
-template <typename T, typename = void>
-struct has_float : std::false_type
-{
-};
-
-template <typename T>
-struct has_float<T, void_t<decltype(std::declval<T&>().as_float())>> : std::true_type
-{
-};
-
-//-----------------------------------------------------------------------------
 template <typename T>
 struct is_base_serializable
 {

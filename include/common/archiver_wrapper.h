@@ -5,6 +5,7 @@
 #include <functional>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -52,10 +53,6 @@ using json_serialization_function_t = std::function<void(json&, void*, bool)>;
 using binary_serialization_function_t =
     std::function<void(serialization::multi_process_stream&, void*, bool)>;
 
-// Backward compatibility aliases (typo in original names - use corrected versions above)
-// Note: These are kept for API compatibility but should not be used in new code
-using json_serilaization_function_t = json_serialization_function_t;
-using binary_serilaization_function_t = binary_serialization_function_t;
 
 SERIALIZATION_API SERIALIZATION_DECLARE_FUNCTION_REGISTRY(
     JsonSerializationRegistry, json_serialization_function_t);
@@ -133,6 +130,7 @@ struct archiver_wrapper<json>
     /// @tparam T Must satisfy is_base_serializable concept
     /// @param archive The JSON object to write to
     /// @param obj The object to serialize
+    /// @note const char* is supported for serialization but use std::string for deserialization
     template <typename T>
         requires is_base_serializable<T>::value
     static void push(json& archive, const T& obj)
@@ -143,7 +141,16 @@ struct archiver_wrapper<json>
         }
         else if constexpr (std::is_same_v<T, const char*>)
         {
-            archive = std::string{obj};
+            // Note: const char* can be serialized (converted to string)
+            // but cannot be deserialized. Use std::string for round-trip serialization.
+            if (obj == nullptr)
+            {
+                archive = nullptr;
+            }
+            else
+            {
+                archive = std::string{obj};
+            }
         }
         else if constexpr (std::is_same_v<T, std::monostate>)
         {
@@ -327,11 +334,7 @@ struct archiver_wrapper<serialization::multi_process_stream>
         requires is_base_serializable<T>::value
     static void push(serialization::multi_process_stream& archive, const T& obj)
     {
-        if constexpr (serialization::has_float<T>::value)
-        {
-            archive << static_cast<double>(obj.as_float());
-        }
-        else if constexpr (std::is_same_v<T, std::monostate>)
+        if constexpr (std::is_same_v<T, std::monostate>)
         {
             // monostate is an empty type - write a marker byte
             archive << static_cast<unsigned char>(0);
@@ -359,13 +362,7 @@ struct archiver_wrapper<serialization::multi_process_stream>
         requires is_base_serializable<T>::value
     static void pop(serialization::multi_process_stream& archive, T& obj)
     {
-        if constexpr (serialization::has_float<T>::value)
-        {
-            double d;
-            archive >> d;
-            obj = d;
-        }
-        else if constexpr (std::is_same_v<T, std::monostate>)
+        if constexpr (std::is_same_v<T, std::monostate>)
         {
             // monostate is an empty type - read and discard the marker byte
             unsigned char marker;

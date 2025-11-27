@@ -37,7 +37,7 @@ public:
 private:
     void initialize() {}
     test_serialization() = default;
-    SERIALIZATION_MACRO(SERIALIZATION_API, test_serialization, d_);
+    SERIALIZATION_MACRO( test_serialization, d_);
 
     double d_{0};
 
