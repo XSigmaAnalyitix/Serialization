@@ -139,7 +139,7 @@ concept Archiver = requires { typename A::value_type; } || requires(A a, std::si
  */
 template <typename T, typename A>
 concept Serializable = requires(A& archive, const T& obj) {
-    { serialization_save(archive, obj) } -> std::same_as<void>;
+    { save(archive, obj) } -> std::same_as<void>;
 };
 
 /**
@@ -147,7 +147,7 @@ concept Serializable = requires(A& archive, const T& obj) {
  */
 template <typename T, typename A>
 concept Deserializable = requires(A& archive, T& obj) {
-    { serialization_load(archive, obj) } -> std::same_as<void>;
+    { load(archive, obj) } -> std::same_as<void>;
 };
 
 /**

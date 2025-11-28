@@ -175,12 +175,12 @@ inline constexpr std::string_view EMPTY_NAME = "null object!";
 template <typename Archiver, typename T>
     requires BaseSerializable<T> || Container<T> || Reflectable<T> || SmartPointer<T> ||
              TupleLike<T> || VariantLike<T> || OptionalLike<T>
-void serialization_save(Archiver& archive, const T& obj);
+void save(Archiver& archive, const T& obj);
 
 template <typename Archiver, typename T>
     requires BaseSerializable<T> || Container<T> || Reflectable<T> || SmartPointer<T> ||
              TupleLike<T> || VariantLike<T> || OptionalLike<T>
-void serialization_load(Archiver& archive, T& obj);
+void load(Archiver& archive, T& obj);
 
 //-----------------------------------------------------------------------------
 // Registry registration helper with const-correctness
@@ -190,13 +190,13 @@ namespace detail
 template <typename Archiver, typename T>
 void save_polymorphic(Archiver& archive, const T& obj)
 {
-    serialization::serialization_save(archive, obj);
+    serialization::save(archive, obj);
 }
 
 template <typename Archiver, typename T>
 void load_polymorphic(Archiver& archive, T& obj)
 {
-    serialization::serialization_load(archive, obj);
+    serialization::load(archive, obj);
 }
 }  // namespace detail
 
@@ -243,12 +243,12 @@ void load_container(Archiver& archive, C& container)
         if constexpr (EmplaceBackable<C>)
         {
             auto& element = container.emplace_back();
-            serialization::serialization_load(archiver_wrapper<Archiver>::get(archive, i), element);
+            serialization::load(archiver_wrapper<Archiver>::get(archive, i), element);
         }
         else
         {
             typename C::value_type item;
-            serialization::serialization_load(archiver_wrapper<Archiver>::get(archive, i), item);
+            serialization::load(archiver_wrapper<Archiver>::get(archive, i), item);
             container.insert(container.end(), std::move(item));
         }
     }
@@ -265,7 +265,7 @@ void save_container(Archiver& archive, const C& container)
     {
         for (size_t i = 0; i < size; ++i)
         {
-            serialization::serialization_save(
+            serialization::save(
                 archiver_wrapper<Archiver>::get(archive, i), container[i]);
         }
     }
@@ -274,7 +274,7 @@ void save_container(Archiver& archive, const C& container)
         size_t i = 0;
         for (const auto& item : container)
         {
-            serialization::serialization_save(archiver_wrapper<Archiver>::get(archive, i++), item);
+            serialization::save(archiver_wrapper<Archiver>::get(archive, i++), item);
         }
     }
     else
@@ -282,7 +282,7 @@ void save_container(Archiver& archive, const C& container)
         size_t i = 0;
         for (const auto& item : container)
         {
-            serialization::serialization_save(archiver_wrapper<Archiver>::get(archive, i), item);
+            serialization::save(archiver_wrapper<Archiver>::get(archive, i), item);
             ++i;
         }
     }
@@ -316,8 +316,8 @@ void load_associative_container(Archiver& archive, C& container)
             typename C::key_type    key;
             typename C::mapped_type value;
 
-            serialization::serialization_load(archiver_wrapper<Archiver>::get(archive, 2 * i), key);
-            serialization::serialization_load(
+            serialization::load(archiver_wrapper<Archiver>::get(archive, 2 * i), key);
+            serialization::load(
                 archiver_wrapper<Archiver>::get(archive, 2 * i + 1), value);
 
             container.emplace(std::move(key), std::move(value));
@@ -328,7 +328,7 @@ void load_associative_container(Archiver& archive, C& container)
         for (size_t i = 0; i < size; ++i)
         {
             typename C::value_type value;
-            serialization::serialization_load(archiver_wrapper<Archiver>::get(archive, i), value);
+            serialization::load(archiver_wrapper<Archiver>::get(archive, i), value);
             container.emplace(std::move(value));
         }
     }
@@ -346,8 +346,8 @@ void save_associative_container(Archiver& archive, const C& container)
         size_t i = 0;
         for (const auto& [key, value] : container)
         {
-            serialization::serialization_save(archiver_wrapper<Archiver>::get(archive, i++), key);
-            serialization::serialization_save(archiver_wrapper<Archiver>::get(archive, i++), value);
+            serialization::save(archiver_wrapper<Archiver>::get(archive, i++), key);
+            serialization::save(archiver_wrapper<Archiver>::get(archive, i++), value);
         }
     }
     else  // SetLike
@@ -357,7 +357,7 @@ void save_associative_container(Archiver& archive, const C& container)
         size_t i = 0;
         for (const auto& item : container)
         {
-            serialization::serialization_save(archiver_wrapper<Archiver>::get(archive, i++), item);
+            serialization::save(archiver_wrapper<Archiver>::get(archive, i++), item);
         }
     }
 }
@@ -399,7 +399,7 @@ struct serializer_impl
                     if constexpr (!is_reflection_empty_v<std::decay_t<decltype(property)>>)
                     {
                         const auto& member_ref = obj->*(property.member());
-                        serialization::serialization_save(archive_tmp, member_ref);
+                        serialization::save(archive_tmp, member_ref);
                     }
                 });
         }
@@ -438,7 +438,7 @@ struct serializer_impl
                             using member_type =
                                 typename std::decay_t<decltype(property)>::member_type;
                             auto& member_ref = obj.*(property.member());
-                            serialization::serialization_load<Archiver, member_type>(
+                            serialization::load<Archiver, member_type>(
                                 archive_tmp, member_ref);
                         }
                     });
@@ -451,7 +451,7 @@ struct serializer_impl
     //-------------------------------------------------------------------------
     // Main save dispatcher with concepts
     //-------------------------------------------------------------------------
-    static void serialization_save(Archiver& archive, const T& obj)
+    static void save(Archiver& archive, const T& obj)
         requires BaseSerializable<T> || Container<T> || Reflectable<T> || std::is_pointer_v<T>
     {
         if constexpr (BaseSerializable<T>)
@@ -495,7 +495,7 @@ struct serializer_impl
     //-------------------------------------------------------------------------
     // Main load dispatcher with concepts
     //-------------------------------------------------------------------------
-    static void serialization_load(Archiver& archive, T& obj)
+    static void load(Archiver& archive, T& obj)
         requires BaseSerializable<T> || Container<T> || Reflectable<T>
     {
         if constexpr (BaseSerializable<T>)
@@ -530,7 +530,7 @@ struct serializer_impl
 template <typename Archiver, typename Item, std::size_t Size>
 struct serializer_impl<Archiver, std::array<Item, Size>>
 {
-    static void serialization_load(Archiver& archive, std::array<Item, Size>& array)
+    static void load(Archiver& archive, std::array<Item, Size>& array)
     {
         const auto archive_size = archiver_wrapper<Archiver>::size(archive);
 
@@ -543,18 +543,18 @@ struct serializer_impl<Archiver, std::array<Item, Size>>
 
         for (size_t i = 0; i < Size; ++i)
         {
-            serialization::serialization_load(
+            serialization::load(
                 archiver_wrapper<Archiver>::get(archive, i), array[i]);
         }
     }
 
-    static void serialization_save(Archiver& archive, const std::array<Item, Size>& array)
+    static void save(Archiver& archive, const std::array<Item, Size>& array)
     {
         archiver_wrapper<Archiver>::resize(archive, Size);
 
         for (size_t i = 0; i < Size; ++i)
         {
-            serialization::serialization_save(
+            serialization::save(
                 archiver_wrapper<Archiver>::get(archive, i), array[i]);
         }
     }
@@ -566,7 +566,7 @@ struct serializer_impl<Archiver, std::array<Item, Size>>
 template <typename Archiver, typename... Types>
 struct serializer_impl<Archiver, std::variant<Types...>>
 {
-    static void serialization_save(Archiver& archive, const std::variant<Types...>& variant)
+    static void save(Archiver& archive, const std::variant<Types...>& variant)
     {
         static_assert(sizeof...(Types) <= 255, "Variant can contain at most 255 types");
 
@@ -583,13 +583,13 @@ struct serializer_impl<Archiver, std::variant<Types...>>
             [&archive, index](const auto& object)
             {
                 archiver_wrapper<Archiver>::push_index(archive, INDEX_NAME, index);
-                serialization::serialization_save(
+                serialization::save(
                     archiver_wrapper<Archiver>::get(archive, VALUE_NAME), object);
             },
             variant);
     }
 
-    static void serialization_load(Archiver& archive, std::variant<Types...>& variant)
+    static void load(Archiver& archive, std::variant<Types...>& variant)
     {
         constexpr size_t num_types = sizeof...(Types);
         static_assert(num_types <= 255, "Variant can contain at most 255 types");
@@ -615,7 +615,7 @@ struct serializer_impl<Archiver, std::variant<Types...>>
                     {
                         variant = Types{};
                     }
-                    serialization::serialization_load(archive, std::get<Types>(variant));
+                    serialization::load(archive, std::get<Types>(variant));
                 }
                 else
                 {
@@ -625,7 +625,7 @@ struct serializer_impl<Archiver, std::variant<Types...>>
 
                     try
                     {
-                        serialization::serialization_load(archive, *ptr);
+                        serialization::load(archive, *ptr);
                         variant = std::move(*ptr);
                     }
                     catch (...)
@@ -647,16 +647,16 @@ struct serializer_impl<Archiver, std::variant<Types...>>
 template <typename Archiver, typename First, typename Second>
 struct serializer_impl<Archiver, std::pair<First, Second>>
 {
-    static void serialization_load(Archiver& archive, std::pair<First, Second>& pair)
+    static void load(Archiver& archive, std::pair<First, Second>& pair)
     {
-        serialization::serialization_load(archiver_wrapper<Archiver>::get(archive, 0), pair.first);
-        serialization::serialization_load(archiver_wrapper<Archiver>::get(archive, 1), pair.second);
+        serialization::load(archiver_wrapper<Archiver>::get(archive, 0), pair.first);
+        serialization::load(archiver_wrapper<Archiver>::get(archive, 1), pair.second);
     }
 
-    static void serialization_save(Archiver& archive, const std::pair<First, Second>& pair)
+    static void save(Archiver& archive, const std::pair<First, Second>& pair)
     {
-        serialization::serialization_save(archiver_wrapper<Archiver>::get(archive, 0), pair.first);
-        serialization::serialization_save(archiver_wrapper<Archiver>::get(archive, 1), pair.second);
+        serialization::save(archiver_wrapper<Archiver>::get(archive, 0), pair.first);
+        serialization::save(archiver_wrapper<Archiver>::get(archive, 1), pair.second);
     }
 };
 
@@ -668,21 +668,21 @@ struct serializer_impl<Archiver, T>
 {
     using element_type = typename T::element_type;
 
-    static void serialization_save(Archiver& archive, const T& object)
+    static void save(Archiver& archive, const T& object)
     {
         SERIALIZATION_CHECK(
             object != nullptr,
             detail::serialization_error::error_code::null_pointer,
             "Cannot serialize null unique_ptr");
 
-        serialization::serialization_save(archive, *object);
+        serialization::save(archive, *object);
     }
 
-    static void serialization_load(Archiver& archive, T& object)
+    static void load(Archiver& archive, T& object)
     {
         using mutable_element_type = std::remove_const_t<element_type>;
         auto loaded_object = serialization::access::serializer::make_ptr<mutable_element_type>();
-        serialization::serialization_load(archive, *loaded_object);
+        serialization::load(archive, *loaded_object);
         object.reset(loaded_object.release());
     }
 };
@@ -693,7 +693,7 @@ struct serializer_impl<Archiver, T>
 {
     using element_type = typename T::element_type;
 
-    static void serialization_save(Archiver& archive, const T& object)
+    static void save(Archiver& archive, const T& object)
     {
         if (!object)
         {
@@ -706,7 +706,7 @@ struct serializer_impl<Archiver, T>
 
         if constexpr (Reflectable<element_type>)
         {
-            serialization::serialization_save(archive, *object);
+            serialization::save(archive, *object);
         }
         else
         {
@@ -719,7 +719,7 @@ struct serializer_impl<Archiver, T>
         }
     }
 
-    static void serialization_load(Archiver& archive, T& object)
+    static void load(Archiver& archive, T& object)
     {
         using archiver_type          = std::remove_cv_t<Archiver>;
         const std::string class_name = archiver_wrapper<archiver_type>::pop_class_name(archive);
@@ -741,7 +741,7 @@ struct serializer_impl<Archiver, T>
             using mutable_element_type = std::remove_const_t<element_type>;
             auto loaded_object =
                 serialization::access::serializer::make_ptr<mutable_element_type>();
-            serialization::serialization_load(archive, *loaded_object);
+            serialization::load(archive, *loaded_object);
             object.reset(loaded_object.release());
         }
         else
@@ -760,7 +760,7 @@ struct serializer_impl<Archiver, T>
 template <typename Archiver, TupleLike T>
 struct serializer_impl<Archiver, T>
 {
-    static void serialization_load(Archiver& archive, T& tuple)
+    static void load(Archiver& archive, T& tuple)
     {
         constexpr auto tuple_size   = std::tuple_size_v<T>;
         const auto     archive_size = archiver_wrapper<Archiver>::size(archive);
@@ -775,7 +775,7 @@ struct serializer_impl<Archiver, T>
         load_tuple_impl(archive, tuple, std::make_index_sequence<tuple_size>{});
     }
 
-    static void serialization_save(Archiver& archive, const T& tuple)
+    static void save(Archiver& archive, const T& tuple)
     {
         constexpr auto tuple_size = std::tuple_size_v<T>;
         archiver_wrapper<Archiver>::resize(archive, tuple_size);
@@ -786,7 +786,7 @@ private:
     template <std::size_t... Is>
     static void load_tuple_impl(Archiver& archive, T& tuple, std::index_sequence<Is...>)
     {
-        (serialization::serialization_load(
+        (serialization::load(
              archiver_wrapper<Archiver>::get(archive, Is), std::get<Is>(tuple)),
          ...);
     }
@@ -794,7 +794,7 @@ private:
     template <std::size_t... Is>
     static void save_tuple_impl(Archiver& archive, const T& tuple, std::index_sequence<Is...>)
     {
-        (serialization::serialization_save(
+        (serialization::save(
              archiver_wrapper<Archiver>::get(archive, Is), std::get<Is>(tuple)),
          ...);
     }
@@ -808,23 +808,23 @@ struct serializer_impl<Archiver, T>
 {
     using value_type = typename T::value_type;
 
-    static void serialization_save(Archiver& archive, const T& optional)
+    static void save(Archiver& archive, const T& optional)
     {
         const bool has_value = optional.has_value();
 
         // First, save whether the optional has a value
         archiver_wrapper<Archiver>::resize(archive, 2);
-        serialization::serialization_save(archiver_wrapper<Archiver>::get(archive, 0), has_value);
+        serialization::save(archiver_wrapper<Archiver>::get(archive, 0), has_value);
 
         // If it has a value, save it
         if (has_value)
         {
-            serialization::serialization_save(
+            serialization::save(
                 archiver_wrapper<Archiver>::get(archive, 1), *optional);
         }
     }
 
-    static void serialization_load(Archiver& archive, T& optional)
+    static void load(Archiver& archive, T& optional)
     {
         const auto archive_size = archiver_wrapper<Archiver>::size(archive);
 
@@ -836,7 +836,7 @@ struct serializer_impl<Archiver, T>
 
         // Load the has_value flag
         bool has_value = false;
-        serialization::serialization_load(archiver_wrapper<Archiver>::get(archive, 0), has_value);
+        serialization::load(archiver_wrapper<Archiver>::get(archive, 0), has_value);
 
         if (has_value)
         {
@@ -847,7 +847,7 @@ struct serializer_impl<Archiver, T>
                 archive_size);
 
             value_type loaded_value;
-            serialization::serialization_load(
+            serialization::load(
                 archiver_wrapper<Archiver>::get(archive, 1), loaded_value);
             optional = std::move(loaded_value);
         }
@@ -866,17 +866,17 @@ struct serializer_impl<Archiver, T>
 template <typename Archiver, typename T>
     requires BaseSerializable<T> || Container<T> || Reflectable<T> || SmartPointer<T> ||
              TupleLike<T> || VariantLike<T> || OptionalLike<T>
-void serialization_save(Archiver& archive, const T& obj)
+void save(Archiver& archive, const T& obj)
 {
-    impl::serializer_impl<Archiver, T>::serialization_save(archive, obj);
+    impl::serializer_impl<Archiver, T>::save(archive, obj);
 }
 
 template <typename Archiver, typename T>
     requires BaseSerializable<T> || Container<T> || Reflectable<T> || SmartPointer<T> ||
              TupleLike<T> || VariantLike<T> || OptionalLike<T>
-void serialization_load(Archiver& archive, T& obj)
+void load(Archiver& archive, T& obj)
 {
-    impl::serializer_impl<Archiver, T>::serialization_load(archive, obj);
+    impl::serializer_impl<Archiver, T>::load(archive, obj);
 }
 
 }  // namespace serialization

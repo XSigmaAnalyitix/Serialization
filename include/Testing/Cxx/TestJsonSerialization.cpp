@@ -79,8 +79,8 @@ TEST_F(JsonSerializationTest, StringSerialization)
 {
     std::string a_in = "name";
     std::string a_out;
-    serialization::serialization_save(buffer, a_in);
-    serialization::serialization_load(buffer, a_out);
+    serialization::save(buffer, a_in);
+    serialization::load(buffer, a_out);
     EXPECT_EQ(a_in, a_out);
 }
 
@@ -88,8 +88,8 @@ TEST_F(JsonSerializationTest, PairSerialization)
 {
     std::pair<float, float> a_in = std::make_pair(1.0f, 1.0f);
     std::pair<float, float> a_out;
-    serialization::serialization_save(buffer, a_in);
-    serialization::serialization_load(buffer, a_out);
+    serialization::save(buffer, a_in);
+    serialization::load(buffer, a_out);
     EXPECT_EQ(a_in, a_out);
 }
 
@@ -101,8 +101,8 @@ TEST_F(JsonSerializationTest, VectorSerialization)
 {
     std::vector<double> rhs = {1, 2, 4, 6, 8};
     std::vector<double> lhs;
-    serialization::serialization_save(buffer, rhs);
-    serialization::serialization_load(buffer, lhs);
+    serialization::save(buffer, rhs);
+    serialization::load(buffer, lhs);
     EXPECT_EQ(rhs, lhs);
 }
 
@@ -110,8 +110,8 @@ TEST_F(JsonSerializationTest, SetSerialization)
 {
     std::set<int> rhs{1, 2, 3, 4, 5};
     std::set<int> lhs;
-    serialization::serialization_save(buffer, rhs);
-    serialization::serialization_load(buffer, lhs);
+    serialization::save(buffer, rhs);
+    serialization::load(buffer, lhs);
     EXPECT_EQ(lhs.size(), rhs.size());
     EXPECT_TRUE(std::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
@@ -120,8 +120,8 @@ TEST_F(JsonSerializationTest, ArraySerialization)
 {
     std::array<unsigned int, 5> rhs{1, 2, 3, 4, 5};
     std::array<unsigned int, 5> lhs;
-    serialization::serialization_save(buffer, rhs);
-    serialization::serialization_load(buffer, lhs);
+    serialization::save(buffer, rhs);
+    serialization::load(buffer, lhs);
     EXPECT_EQ(lhs.size(), rhs.size());
     EXPECT_TRUE(std::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
@@ -130,8 +130,8 @@ TEST_F(JsonSerializationTest, MapSerialization)
 {
     std::map<int64_t, int> rhs{{1, 1}, {2, 2}};
     std::map<int64_t, int> lhs;
-    serialization::serialization_save(buffer, rhs);
-    serialization::serialization_load(buffer, lhs);
+    serialization::save(buffer, rhs);
+    serialization::load(buffer, lhs);
     EXPECT_EQ(lhs.size(), rhs.size());
     EXPECT_TRUE(std::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
@@ -140,8 +140,8 @@ TEST_F(JsonSerializationTest, UnorderedMapSerialization)
 {
     std::unordered_map<uint64_t, float> rhs{{1, 1.0f}, {2, 2.0f}, {3, 1.3f}, {4, 2.3f}};
     std::unordered_map<uint64_t, float> lhs;
-    serialization::serialization_save(buffer, rhs);
-    serialization::serialization_load(buffer, lhs);
+    serialization::save(buffer, rhs);
+    serialization::load(buffer, lhs);
     EXPECT_EQ(lhs, rhs);
 }
 
@@ -153,8 +153,8 @@ TEST_F(JsonSerializationTest, UniquePtrSerialization)
 {
     auto rhs = serialization::util::make_ptr_unique_mutable<test::test_serialization>(5.6);
     std::unique_ptr<test::test_serialization> lhs;
-    serialization::serialization_save(buffer, rhs);
-    serialization::serialization_load(buffer, lhs);
+    serialization::save(buffer, rhs);
+    serialization::load(buffer, lhs);
     EXPECT_EQ(rhs->d(), lhs->d());
 }
 
@@ -163,8 +163,8 @@ TEST_F(JsonSerializationTest, SharedPtrSerialization)
     serialization::ptr_mutable<test::test_serialization> rhs =
         std::make_shared<test::test_serialization>(6.7);
     serialization::ptr_const<test::test_serialization> lhs;
-    serialization::serialization_save(buffer, rhs);
-    serialization::serialization_load(buffer, lhs);
+    serialization::save(buffer, rhs);
+    serialization::load(buffer, lhs);
     EXPECT_EQ(rhs->d(), lhs->d());
 }
 
@@ -176,8 +176,8 @@ TEST_F(JsonSerializationTest, DerivedTypeSerialization)
 {
     const auto& rhs = std::make_shared<test::test_derived_serialization>(6.7, "me");
     serialization::ptr_const<test::test_serialization> lhs;
-    serialization::serialization_save(buffer, rhs);
-    serialization::serialization_load(buffer, lhs);
+    serialization::save(buffer, rhs);
+    serialization::load(buffer, lhs);
 
     auto lhs_derived =
         std::dynamic_pointer_cast<const test::test_derived_serialization>(lhs);
@@ -194,7 +194,7 @@ TEST_F(JsonSerializationTest, VariantSerialization)
 {
     std::variant<int, float, std::string> rhs = 6.5f;
     std::variant<int, float, std::string> lhs;
-    serialization::serialization_save(buffer, rhs);
-    serialization::serialization_load(buffer, lhs);
+    serialization::save(buffer, rhs);
+    serialization::load(buffer, lhs);
     EXPECT_EQ(rhs, lhs);
 }

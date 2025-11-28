@@ -35,7 +35,7 @@ public:
     static std::vector<unsigned char> binary_serialize(const ptr_const<T>& obj)
     {
         serialization::multi_process_stream buffer;
-        serialization::serialization_save<serialization::multi_process_stream, ptr_const<T>>(
+        serialization::save<serialization::multi_process_stream, ptr_const<T>>(
             buffer, obj);
         return buffer.GetRawData();
     };
@@ -46,7 +46,7 @@ public:
         serialization::multi_process_stream buffer;
         buffer.SetRawData(buffer_ref);
         ptr_const<T> ptr_t;
-        serialization::serialization_load<serialization::multi_process_stream, ptr_const<T>>(
+        serialization::load<serialization::multi_process_stream, ptr_const<T>>(
             buffer, ptr_t);
         return ptr_t;
     };
@@ -79,7 +79,7 @@ public:
     static std::string print(const ptr_const<T>& obj)
     {
         json value;
-        serialization::serialization_save(value, obj);
+        serialization::save(value, obj);
 
         return value.dump(2);
     };
@@ -88,14 +88,14 @@ public:
     static void json_serialize(json& value, const ptr_const<T>& obj)
     {
         auto& data = value["root"];
-        serialization::serialization_save(data, obj);
+        serialization::save(data, obj);
     };
 
     template <typename T>
     static void json_deserialize(const json& value, ptr_const<T>& obj)
     {
         auto& data = const_cast<json&>(value["root"]);
-        serialization::serialization_load(data, obj);
+        serialization::load(data, obj);
     };
 
     SERIALIZATION_API static void read_json(const std::string& path, json& root);

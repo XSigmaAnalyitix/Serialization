@@ -80,9 +80,9 @@ Color color = Color::Red;
 
 // JSON serialization
 json archive;
-serialization_save(archive, i);
-serialization_save(archive, str);
-serialization_save(archive, color);
+save(archive, i);
+save(archive, str);
+save(archive, color);
 ```
 
 ### Sequential Containers
@@ -92,15 +92,15 @@ Supports all standard sequential containers:
 ```cpp
 // Vector
 std::vector<int> vec{1, 2, 3, 4, 5};
-serialization_save(archive, vec);
+save(archive, vec);
 
 // List
 std::list<double> lst{1.1, 2.2, 3.3};
-serialization_save(archive, lst);
+save(archive, lst);
 
 // Deque
 std::deque<std::string> deq{"one", "two", "three"};
-serialization_save(archive, deq);
+save(archive, deq);
 ```
 
 ### Associative Containers
@@ -110,19 +110,19 @@ Full support for maps and sets:
 ```cpp
 // Set
 std::set<int> s{1, 2, 3, 4, 5};
-serialization_save(archive, s);
+save(archive, s);
 
 // Unordered set
 std::unordered_set<std::string> us{"apple", "banana", "orange"};
-serialization_save(archive, us);
+save(archive, us);
 
 // Map
 std::map<int, std::string> m{{1, "one"}, {2, "two"}, {3, "three"}};
-serialization_save(archive, m);
+save(archive, m);
 
 // Unordered map
 std::unordered_map<std::string, int> um{{"one", 1}, {"two", 2}};
-serialization_save(archive, um);
+save(archive, um);
 
 // Multimap and multiset also supported
 std::multimap<int, std::string> mm{{1, "a"}, {1, "b"}};
@@ -134,13 +134,13 @@ std::multiset<int> ms{1, 1, 2, 3};
 ```cpp
 // std::array
 std::array<int, 5> arr{1, 2, 3, 4, 5};
-serialization_save(archive, arr);
+save(archive, arr);
 
 // Size is validated during deserialization
 std::array<int, 5> loaded_arr;
-serialization_load(archive, loaded_arr);  // OK: same size
+load(archive, loaded_arr);  // OK: same size
 // std::array<int, 6> wrong_size;
-// serialization_load(archive, wrong_size);  // Error: size mismatch
+// load(archive, wrong_size);  // Error: size mismatch
 ```
 
 ### Pairs and Tuples
@@ -148,15 +148,15 @@ serialization_load(archive, loaded_arr);  // OK: same size
 ```cpp
 // std::pair
 std::pair<int, std::string> p{42, "answer"};
-serialization_save(archive, p);
+save(archive, p);
 
 // std::tuple
 std::tuple<int, double, std::string> t{1, 3.14, "pi"};
-serialization_save(archive, t);
+save(archive, t);
 
 // Nested tuples
 std::tuple<std::pair<int, int>, std::string> nested{{1, 2}, "nested"};
-serialization_save(archive, nested);
+save(archive, nested);
 ```
 
 ### Smart Pointers
@@ -164,21 +164,21 @@ serialization_save(archive, nested);
 ```cpp
 // std::unique_ptr
 auto uptr = std::make_unique<MyClass>(42);
-serialization_save(archive, uptr);
+save(archive, uptr);
 
 std::unique_ptr<MyClass> loaded_uptr;
-serialization_load(archive, loaded_uptr);
+load(archive, loaded_uptr);
 
 // std::shared_ptr
 auto sptr = std::make_shared<MyClass>(42);
-serialization_save(archive, sptr);
+save(archive, sptr);
 
 std::shared_ptr<MyClass> loaded_sptr;
-serialization_load(archive, loaded_sptr);
+load(archive, loaded_sptr);
 
 // Const pointers (removes const during deserialization)
 std::shared_ptr<const MyClass> const_ptr = std::make_shared<MyClass>(42);
-serialization_save(archive, const_ptr);
+save(archive, const_ptr);
 ```
 
 ### Variants
@@ -186,10 +186,10 @@ serialization_save(archive, const_ptr);
 ```cpp
 // std::variant
 std::variant<int, double, std::string> v = "hello";
-serialization_save(archive, v);
+save(archive, v);
 
 std::variant<int, double, std::string> loaded_v;
-serialization_load(archive, loaded_v);  // loaded_v holds "hello"
+load(archive, loaded_v);  // loaded_v holds "hello"
 
 // Variants with complex types
 using ComplexVariant = std::variant<
@@ -198,7 +198,7 @@ using ComplexVariant = std::variant<
     std::map<std::string, int>
 >;
 ComplexVariant cv = std::vector<double>{1.1, 2.2, 3.3};
-serialization_save(archive, cv);
+save(archive, cv);
 ```
 
 ### std::optional
@@ -206,23 +206,23 @@ serialization_save(archive, cv);
 ```cpp
 // std::optional with value
 std::optional<int> opt1 = 42;
-serialization_save(archive, opt1);
+save(archive, opt1);
 
 // std::optional without value (std::nullopt)
 std::optional<int> opt2 = std::nullopt;
-serialization_save(archive, opt2);
+save(archive, opt2);
 
 // Round-trip preserves has_value state
 std::optional<std::string> opt3 = "hello";
-serialization_save(archive, opt3);
+save(archive, opt3);
 
 std::optional<std::string> loaded;
-serialization_load(archive, loaded);
+load(archive, loaded);
 assert(loaded.has_value() && *loaded == "hello");
 
 // Complex types in optional
 std::optional<std::vector<int>> opt4 = std::vector<int>{1, 2, 3};
-serialization_save(archive, opt4);
+save(archive, opt4);
 ```
 
 ### Custom Classes with Reflection
@@ -251,7 +251,7 @@ private:
 
 // Usage
 Person p{"Alice", 30};
-serialization_save(archive, p);
+save(archive, p);
 ```
 
 ## Unsupported Types
@@ -267,11 +267,11 @@ The following types are **NOT currently supported**:
 ```cpp
 // L This will NOT compile
 std::optional<int> opt = 42;
-// serialization_save(archive, opt);  // Error: doesn't satisfy any concept
+// save(archive, opt);  // Error: doesn't satisfy any concept
 
 //  Workaround
 if (opt.has_value()) {
-    serialization_save(archive, *opt);
+    save(archive, *opt);
 }
 ```
 
@@ -285,10 +285,10 @@ if (opt.has_value()) {
 // L Not supported
 std::vector<int> data{1, 2, 3, 4, 5};
 std::span<int> sp(data);
-// serialization_save(archive, sp);  // Error
+// save(archive, sp);  // Error
 
 //  Workaround: serialize the underlying container
-serialization_save(archive, data);
+save(archive, data);
 ```
 
 ### std::string_view
@@ -304,7 +304,7 @@ std::string_view sv = "temporary";
 
 //  Safe: convert to std::string
 std::string str(sv);
-serialization_save(archive, str);
+save(archive, str);
 ```
 
 ### std::chrono Types
@@ -316,11 +316,11 @@ serialization_save(archive, str);
 ```cpp
 // L Not supported
 auto now = std::chrono::system_clock::now();
-// serialization_save(archive, now);  // Error
+// save(archive, now);  // Error
 
 //  Workaround: serialize as count
 auto timestamp = now.time_since_epoch().count();
-serialization_save(archive, timestamp);
+save(archive, timestamp);
 ```
 
 ### Raw Pointers
@@ -332,11 +332,11 @@ serialization_save(archive, timestamp);
 ```cpp
 // L Not supported
 int* raw_ptr = new int(42);
-// serialization_save(archive, raw_ptr);  // Error
+// save(archive, raw_ptr);  // Error
 
 //  Use smart pointers
 auto smart_ptr = std::make_unique<int>(42);
-serialization_save(archive, smart_ptr);
+save(archive, smart_ptr);
 ```
 
 ### C-style Arrays
@@ -351,7 +351,7 @@ int arr[5] = {1, 2, 3, 4, 5};
 
 //  Use std::array
 std::array<int, 5> std_arr{1, 2, 3, 4, 5};
-serialization_save(archive, std_arr);
+save(archive, std_arr);
 ```
 
 ## Quick Start
@@ -370,13 +370,13 @@ int main() {
 
     // Serialize to JSON
     json archive;
-    serialization_save(archive, data);
+    save(archive, data);
 
     std::cout << "JSON: " << archive.dump(2) << std::endl;
 
     // Deserialize
     std::vector<int> loaded;
-    serialization_load(archive, loaded);
+    load(archive, loaded);
 
     // Verify
     assert(data == loaded);
@@ -399,11 +399,11 @@ int main() {
 
     // Serialize to binary
     multi_process_stream buffer;
-    serialization_save(buffer, data);
+    save(buffer, data);
 
     // Deserialize
     std::map<int, std::string> loaded;
-    serialization_load(buffer, loaded);
+    load(buffer, loaded);
 
     assert(data == loaded);
 
@@ -532,10 +532,10 @@ int main() {
     BankAccount account("Alice", 1500.50);
 
     json archive;
-    serialization_save(archive, account);
+    save(archive, account);
 
     BankAccount loaded;
-    serialization_load(archive, loaded);
+    load(archive, loaded);
     // Prints: "Account 1000 deserialized"
 
     assert(loaded.owner() == "Alice");
@@ -746,13 +746,13 @@ int main() {
 
     // Serialize
     json archive;
-    serialization_save(archive, shapes);
+    save(archive, shapes);
 
     std::cout << "Serialized:\n" << archive.dump(2) << std::endl;
 
     // Deserialize - correct types are reconstructed!
     std::vector<std::shared_ptr<Shape>> loaded_shapes;
-    serialization_load(archive, loaded_shapes);
+    load(archive, loaded_shapes);
 
     // Verify polymorphism works
     for (const auto& shape : loaded_shapes) {
@@ -818,10 +818,10 @@ void register_my_types() {
 std::unique_ptr<Shape> shape = std::make_unique<Circle>(0, 0, 10);
 
 json archive;
-serialization_save(archive, shape);
+save(archive, shape);
 
 std::unique_ptr<Shape> loaded_shape;
-serialization_load(archive, loaded_shape);
+load(archive, loaded_shape);
 
 // loaded_shape points to a Circle object
 assert(dynamic_cast<Circle*>(loaded_shape.get()) != nullptr);
@@ -853,13 +853,13 @@ int main() {
 
     // Serialize to JSON
     json archive;
-    serialization_save(archive, data);
+    save(archive, data);
 
     std::cout << archive.dump(2) << std::endl;
 
     // Deserialize
     std::map<std::string, std::vector<std::pair<int, double>>> loaded;
-    serialization_load(archive, loaded);
+    load(archive, loaded);
 
     assert(loaded == data);
     return 0;
@@ -883,10 +883,10 @@ int main() {
     values.push_back(std::vector<int>{1, 2, 3});
 
     json archive;
-    serialization_save(archive, values);
+    save(archive, values);
 
     std::vector<Value> loaded;
-    serialization_load(archive, loaded);
+    load(archive, loaded);
 
     // Type information is preserved
     assert(std::holds_alternative<int>(loaded[0]));
@@ -936,7 +936,7 @@ public:
     void save_to_file(const std::string& filename) {
         using namespace serialization;
         json archive;
-        serialization_save(archive, users_);
+        save(archive, users_);
 
         std::ofstream file(filename);
         file << archive.dump(2);
@@ -947,7 +947,7 @@ public:
         std::ifstream file(filename);
         json archive = json::parse(file);
 
-        serialization_load(archive, users_);
+        load(archive, users_);
     }
 
 private:
@@ -1004,7 +1004,7 @@ void send_message(const Message& msg) {
 
     // Serialize to binary stream
     multi_process_stream buffer;
-    serialization_save(buffer, msg);
+    save(buffer, msg);
 
     // Get raw bytes for IPC
     auto raw_data = buffer.GetRawData();
@@ -1022,7 +1022,7 @@ Message receive_message(const std::vector<unsigned char>& raw_data) {
 
     // Deserialize
     Message msg;
-    serialization_load(buffer, msg);
+    load(buffer, msg);
 
     return msg;
 }
@@ -1032,13 +1032,13 @@ Message receive_message(const std::vector<unsigned char>& raw_data) {
 
 ### Core Functions
 
-#### serialization_save
+#### save
 
 ```cpp
 template <typename Archiver, typename T>
     requires BaseSerializable<T> || Container<T> || Reflectable<T> ||
              SmartPointer<T> || TupleLike<T> || VariantLike<T>
-void serialization_save(Archiver& archive, const T& obj);
+void save(Archiver& archive, const T& obj);
 ```
 
 Serializes an object to the given archive.
@@ -1049,13 +1049,13 @@ Serializes an object to the given archive.
 
 **Constraints**: T must satisfy at least one of the serialization concepts.
 
-#### serialization_load
+#### load
 
 ```cpp
 template <typename Archiver, typename T>
     requires BaseSerializable<T> || Container<T> || Reflectable<T> ||
              SmartPointer<T> || TupleLike<T> || VariantLike<T>
-void serialization_load(Archiver& archive, T& obj);
+void load(Archiver& archive, T& obj);
 ```
 
 Deserializes an object from the given archive.
