@@ -367,7 +367,7 @@ public:
 
 #define SERIALIZATION_REGISTER_FUNCTION(RegistryName, type, Function)                   \
     static Registerer##RegistryName SERIALIZATION_ANONYMOUS_VARIABLE(g_##RegistryName)( \
-        demangle(typeid(type).name()), RegistryName(), Function);
+        serialization::demangle(typeid(type).name()), RegistryName(), Function);
 
 #define SERIALIZATION_DECLARE_TYPED_REGISTRY(RegistryName, KeyType, ObjectType, PtrType, ...)      \
     serialization::creator::Registry<KeyType, PtrType<ObjectType>, ##__VA_ARGS__>* RegistryName(); \

@@ -17,7 +17,7 @@
 #include "serialization_impl.h"
 #include "util/pointer.h"
 
-namespace serialization
+namespace test
 {
 class test_serialization
 {
@@ -31,7 +31,7 @@ public:
 protected:
     void initialize() {};
     test_serialization() = default;
-    SERIALIZATION_MACRO( test_serialization, d_);
+    SERIALIZATION_MACRO(test_serialization, d_);
 
 protected:
     double d_{0};
@@ -151,8 +151,8 @@ TEST_F(JsonSerializationTest, UnorderedMapSerialization)
 
 TEST_F(JsonSerializationTest, UniquePtrSerialization)
 {
-    auto rhs = serialization::util::make_ptr_unique_mutable<serialization::test_serialization>(5.6);
-    std::unique_ptr<serialization::test_serialization> lhs;
+    auto rhs = serialization::util::make_ptr_unique_mutable<test::test_serialization>(5.6);
+    std::unique_ptr<test::test_serialization> lhs;
     serialization::serialization_save(buffer, rhs);
     serialization::serialization_load(buffer, lhs);
     EXPECT_EQ(rhs->d(), lhs->d());
@@ -160,9 +160,9 @@ TEST_F(JsonSerializationTest, UniquePtrSerialization)
 
 TEST_F(JsonSerializationTest, SharedPtrSerialization)
 {
-    serialization::ptr_mutable<serialization::test_serialization> rhs =
-        std::make_shared<serialization::test_serialization>(6.7);
-    serialization::ptr_const<serialization::test_serialization> lhs;
+    serialization::ptr_mutable<test::test_serialization> rhs =
+        std::make_shared<test::test_serialization>(6.7);
+    serialization::ptr_const<test::test_serialization> lhs;
     serialization::serialization_save(buffer, rhs);
     serialization::serialization_load(buffer, lhs);
     EXPECT_EQ(rhs->d(), lhs->d());
@@ -174,13 +174,13 @@ TEST_F(JsonSerializationTest, SharedPtrSerialization)
 
 TEST_F(JsonSerializationTest, DerivedTypeSerialization)
 {
-    const auto& rhs = std::make_shared<serialization::test_derived_serialization>(6.7, "me");
-    serialization::ptr_const<serialization::test_serialization> lhs;
+    const auto& rhs = std::make_shared<test::test_derived_serialization>(6.7, "me");
+    serialization::ptr_const<test::test_serialization> lhs;
     serialization::serialization_save(buffer, rhs);
     serialization::serialization_load(buffer, lhs);
 
     auto lhs_derived =
-        std::dynamic_pointer_cast<const serialization::test_derived_serialization>(lhs);
+        std::dynamic_pointer_cast<const test::test_derived_serialization>(lhs);
     EXPECT_NE(lhs_derived, nullptr);
     EXPECT_EQ(rhs->d(), lhs->d());
     EXPECT_EQ(rhs->n(), lhs_derived->n());

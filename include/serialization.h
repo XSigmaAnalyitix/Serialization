@@ -16,13 +16,12 @@
 namespace serialization
 {
 #define COMMA ,
-#define SERIALIZATION_REGISTER_DERIVED_SERIALIZATION(type)                            \
-    SERIALIZATION_REGISTER_FUNCTION(                                                  \
-        JsonSerializationRegistry, type, &register_serializer_impl<json COMMA type>); \
-    SERIALIZATION_REGISTER_FUNCTION(                                                  \
-        BinarySerializationRegistry,                                                  \
-        type,                                                                         \
-        &register_serializer_impl<serialization::multi_process_stream COMMA type>);
+#define SERIALIZATION_REGISTER_DERIVED_SERIALIZATION(type)                                    \
+    static serialization::RegistererJsonSerializationRegistry SERIALIZATION_ANONYMOUS_VARIABLE(g_JsonSerializationRegistry)( \
+        serialization::demangle(typeid(type).name()), serialization::JsonSerializationRegistry(), &serialization::register_serializer_impl<serialization::json COMMA type>); \
+    static serialization::RegistererBinarySerializationRegistry SERIALIZATION_ANONYMOUS_VARIABLE(g_BinarySerializationRegistry)( \
+        serialization::demangle(typeid(type).name()), serialization::BinarySerializationRegistry(), \
+        &serialization::register_serializer_impl<serialization::multi_process_stream COMMA type>);
 
 namespace serialization_impl
 {

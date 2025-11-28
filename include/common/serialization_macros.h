@@ -323,7 +323,7 @@ namespace serialization
 #define MACRO_EXPAND(...) __VA_ARGS__
 #define APPLY_VARIADIC_MACRO(macro, ...) MACRO_EXPAND(macro(__VA_ARGS__))
 
-#define REFLECTION(T, t) reflection(&T::t, #t)
+#define REFLECTION(T, t) serialization::reflection(&T::t, #t)
 
 // note use MACRO_CONCAT like A##_##B direct may cause marco expand error
 #define MACRO_CONCAT(A, B) MACRO_CONCAT1(A, B)
@@ -344,7 +344,7 @@ namespace serialization
 #define REFLECTION_META_DATA_IMPL_EMPTY(T)                 \
     constexpr static auto properties()                     \
     {                                                      \
-        return std::make_tuple(reflection_no_member<T>()); \
+        return std::make_tuple(serialization::reflection_no_member<T>()); \
     }
 
 #define MAKE_META_DATA(T, N, ...) \
