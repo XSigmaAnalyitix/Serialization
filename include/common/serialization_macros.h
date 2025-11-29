@@ -341,36 +341,39 @@ namespace serialization
         return std::make_tuple(__VA_ARGS__); \
     }
 
-#define REFLECTION_META_DATA_IMPL_EMPTY(T)                 \
-    constexpr static auto properties()                     \
-    {                                                      \
+#define REFLECTION_META_DATA_IMPL_EMPTY(T)                                \
+    constexpr static auto properties()                                    \
+    {                                                                     \
         return std::make_tuple(serialization::reflection_no_member<T>()); \
     }
 
 #define MAKE_META_DATA(T, N, ...) \
     REFLECTION_META_DATA_IMPL(T, MAKE_T_ARG_LIST(N, REFLECTION, T, __VA_ARGS__))
 
-#define SERIALIZATION_MACRO(T, ...)                     \
+#define SERIALIZATION_MACRO(T, ...)                             \
     MAKE_META_DATA(T, GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__); \
     friend struct serialization::access::serializer;
 
-#define SERIALIZATION_MACRO_EMPTY(T) \
-    REFLECTION_META_DATA_IMPL_EMPTY(T);                     \
+#define SERIALIZATION_MACRO_EMPTY(T)    \
+    REFLECTION_META_DATA_IMPL_EMPTY(T); \
     friend struct serialization::access::serializer;
 
-#define SERIALIZATION_MACRO_TEMPLATE(T, ...)            \
+#define SERIALIZATION_MACRO_TEMPLATE(T, ...)                    \
     MAKE_META_DATA(T, GET_ARG_COUNT(__VA_ARGS__), __VA_ARGS__); \
     friend struct serialization::access::serializer;
 
 // Helper macro to combine parent and derived properties
-#define REFLECTION_META_DATA_DERIVED_IMPL(DerivedClass, ParentClass, ...)    \
-    constexpr static auto properties()                                        \
-    {                                                                         \
+#define REFLECTION_META_DATA_DERIVED_IMPL(DerivedClass, ParentClass, ...)               \
+    constexpr static auto properties()                                                  \
+    {                                                                                   \
         return std::tuple_cat(ParentClass::properties(), std::make_tuple(__VA_ARGS__)); \
     }
 
 // Macro for derived classes that automatically includes parent properties
-#define SERIALIZATION_MACRO_DERIVED(DerivedClass, ParentClass, ...)          \
-    REFLECTION_META_DATA_DERIVED_IMPL(DerivedClass, ParentClass, MAKE_T_ARG_LIST(GET_ARG_COUNT(__VA_ARGS__), REFLECTION, DerivedClass, __VA_ARGS__)); \
+#define SERIALIZATION_MACRO_DERIVED(DerivedClass, ParentClass, ...)                          \
+    REFLECTION_META_DATA_DERIVED_IMPL(                                                       \
+        DerivedClass,                                                                        \
+        ParentClass,                                                                         \
+        MAKE_T_ARG_LIST(GET_ARG_COUNT(__VA_ARGS__), REFLECTION, DerivedClass, __VA_ARGS__)); \
     friend struct serialization::access::serializer;
 }  // namespace serialization

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstddef>
 #include <concepts>
+#include <cstddef>
 #include <functional>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -52,7 +52,6 @@ using json_serialization_function_t = std::function<void(json&, void*, bool)>;
 /// @param is_saving True if saving, false if loading
 using binary_serialization_function_t =
     std::function<void(serialization::multi_process_stream&, void*, bool)>;
-
 
 SERIALIZATION_API SERIALIZATION_DECLARE_FUNCTION_REGISTRY(
     JsonSerializationRegistry, json_serialization_function_t);
@@ -160,8 +159,8 @@ struct archiver_wrapper<json>
         {
             to_json(archive, obj);
         }
-        else if constexpr (std::is_same_v<T, serialization::tenor> ||
-                           std::is_same_v<T, serialization::key>)
+        else if constexpr (
+            std::is_same_v<T, serialization::tenor> || std::is_same_v<T, serialization::key>)
         {
             archive = obj.to_string();
         }
@@ -199,8 +198,8 @@ struct archiver_wrapper<json>
         {
             from_json(archive, obj);
         }
-        else if constexpr (std::is_same_v<T, serialization::tenor> ||
-                           std::is_same_v<T, serialization::key>)
+        else if constexpr (
+            std::is_same_v<T, serialization::tenor> || std::is_same_v<T, serialization::key>)
         {
             obj = archive.get<std::string>();
         }
@@ -270,28 +269,19 @@ struct archiver_wrapper<json>
     /// @param archive The JSON object to read from
     /// @param idx The index to access
     /// @return Const reference to the JSON element
-    [[nodiscard]] static const auto& get(const json& archive, size_t idx)
-    {
-        return archive[idx];
-    }
+    [[nodiscard]] static const auto& get(const json& archive, size_t idx) { return archive[idx]; }
 
     /// @brief Get JSON element by string key (mutable)
     /// @param archive The JSON object to modify
     /// @param idx The key to access
     /// @return Mutable reference to the JSON element
-    static auto& get(json& archive, std::string_view idx)
-    {
-        return archive[std::string(idx)];
-    }
+    static auto& get(json& archive, std::string_view idx) { return archive[std::string(idx)]; }
 
     /// @brief Get JSON element by numeric index (mutable)
     /// @param archive The JSON object to modify
     /// @param idx The index to access
     /// @return Mutable reference to the JSON element
-    static auto& get(json& archive, size_t idx)
-    {
-        return archive[idx];
-    }
+    static auto& get(json& archive, size_t idx) { return archive[idx]; }
 
     /// @brief Resize JSON array (no-op for JSON objects)
     /// @param archive The JSON object (unused)
@@ -304,17 +294,11 @@ struct archiver_wrapper<json>
     /// @brief Get the size of a JSON array or object
     /// @param archive The JSON object to query
     /// @return The number of elements
-    [[nodiscard]] static auto size(const json& archive)
-    {
-        return archive.size();
-    }
+    [[nodiscard]] static auto size(const json& archive) { return archive.size(); }
 
     /// @brief Get the JSON serialization registry
     /// @return Pointer to the global JSON serialization registry
-    [[nodiscard]] static auto registry()
-    {
-        return serialization::JsonSerializationRegistry();
-    }
+    [[nodiscard]] static auto registry() { return serialization::JsonSerializationRegistry(); }
 };
 
 //=============================================================================
@@ -343,8 +327,8 @@ struct archiver_wrapper<serialization::multi_process_stream>
         {
             archive << static_cast<int>(obj);
         }
-        else if constexpr (std::is_same_v<T, serialization::tenor> ||
-                           std::is_same_v<T, serialization::key>)
+        else if constexpr (
+            std::is_same_v<T, serialization::tenor> || std::is_same_v<T, serialization::key>)
         {
             archive << obj.to_string();
         }
@@ -375,8 +359,8 @@ struct archiver_wrapper<serialization::multi_process_stream>
             archive >> i;
             obj = static_cast<T>(i);
         }
-        else if constexpr (std::is_same_v<T, serialization::tenor> ||
-                           std::is_same_v<T, serialization::key>)
+        else if constexpr (
+            std::is_same_v<T, serialization::tenor> || std::is_same_v<T, serialization::key>)
         {
             std::string s;
             archive >> s;
@@ -391,8 +375,8 @@ struct archiver_wrapper<serialization::multi_process_stream>
     /// @brief Store class type information in binary stream
     /// @param archive The binary stream to write to
     /// @param name The class name to store
-    static void push_class_name(serialization::multi_process_stream& archive,
-                                const std::string& name)
+    static void push_class_name(
+        serialization::multi_process_stream& archive, const std::string& name)
     {
         archive << name;
     }
@@ -411,9 +395,10 @@ struct archiver_wrapper<serialization::multi_process_stream>
     /// @param archive The binary stream to write to
     /// @param index_name Unused (for API compatibility with JSON archiver)
     /// @param idx The index value to store
-    static void push_index(serialization::multi_process_stream& archive,
-                           [[maybe_unused]] std::string_view index_name,
-                           unsigned int idx)
+    static void push_index(
+        serialization::multi_process_stream& archive,
+        [[maybe_unused]] std::string_view    index_name,
+        unsigned int                         idx)
     {
         archive << idx;
     }
@@ -422,8 +407,8 @@ struct archiver_wrapper<serialization::multi_process_stream>
     /// @param archive The binary stream to read from
     /// @param index_name Unused (for API compatibility with JSON archiver)
     /// @return The stored index value
-    [[nodiscard]] static auto pop_index(serialization::multi_process_stream& archive,
-                                        [[maybe_unused]] std::string_view index_name)
+    [[nodiscard]] static auto pop_index(
+        serialization::multi_process_stream& archive, [[maybe_unused]] std::string_view index_name)
     {
         unsigned int idx;
         archive >> idx;
@@ -434,8 +419,8 @@ struct archiver_wrapper<serialization::multi_process_stream>
     /// @param archive The binary stream to read from
     /// @param idx Unused (for API compatibility with JSON archiver)
     /// @return Const reference to the binary stream
-    [[nodiscard]] static const auto& get(const serialization::multi_process_stream& archive,
-                                         [[maybe_unused]] std::string_view idx)
+    [[nodiscard]] static const auto& get(
+        const serialization::multi_process_stream& archive, [[maybe_unused]] std::string_view idx)
     {
         return archive;
     }
@@ -444,8 +429,8 @@ struct archiver_wrapper<serialization::multi_process_stream>
     /// @param archive The binary stream to modify
     /// @param idx Unused (for API compatibility with JSON archiver)
     /// @return Mutable reference to the binary stream
-    static auto& get(serialization::multi_process_stream& archive,
-                     [[maybe_unused]] std::string_view idx)
+    static auto& get(
+        serialization::multi_process_stream& archive, [[maybe_unused]] std::string_view idx)
     {
         return archive;
     }
@@ -454,8 +439,7 @@ struct archiver_wrapper<serialization::multi_process_stream>
     /// @param archive The binary stream to modify
     /// @param idx Unused (for API compatibility with JSON archiver)
     /// @return Mutable reference to the binary stream
-    static auto& get(serialization::multi_process_stream& archive,
-                     [[maybe_unused]] size_t idx)
+    static auto& get(serialization::multi_process_stream& archive, [[maybe_unused]] size_t idx)
     {
         return archive;
     }
@@ -480,10 +464,7 @@ struct archiver_wrapper<serialization::multi_process_stream>
 
     /// @brief Get the binary serialization registry
     /// @return Pointer to the global binary serialization registry
-    [[nodiscard]] static auto registry()
-    {
-        return serialization::BinarySerializationRegistry();
-    }
+    [[nodiscard]] static auto registry() { return serialization::BinarySerializationRegistry(); }
 };
 
 }  // namespace serialization

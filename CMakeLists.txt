@@ -51,6 +51,7 @@ set_target_properties(Serialization PROPERTIES
 # Enable RTTI (required for typeid and dynamic_cast in serialization)
 if(MSVC)
     target_compile_options(Serialization PRIVATE /GR)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
 else()
     target_compile_options(Serialization PRIVATE -frtti)
 endif()

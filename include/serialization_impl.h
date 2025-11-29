@@ -265,8 +265,7 @@ void save_container(Archiver& archive, const C& container)
     {
         for (size_t i = 0; i < size; ++i)
         {
-            serialization::save(
-                archiver_wrapper<Archiver>::get(archive, i), container[i]);
+            serialization::save(archiver_wrapper<Archiver>::get(archive, i), container[i]);
         }
     }
     else if constexpr (std::ranges::sized_range<C>)
@@ -317,8 +316,7 @@ void load_associative_container(Archiver& archive, C& container)
             typename C::mapped_type value;
 
             serialization::load(archiver_wrapper<Archiver>::get(archive, 2 * i), key);
-            serialization::load(
-                archiver_wrapper<Archiver>::get(archive, 2 * i + 1), value);
+            serialization::load(archiver_wrapper<Archiver>::get(archive, 2 * i + 1), value);
 
             container.emplace(std::move(key), std::move(value));
         }
@@ -438,8 +436,7 @@ struct serializer_impl
                             using member_type =
                                 typename std::decay_t<decltype(property)>::member_type;
                             auto& member_ref = obj.*(property.member());
-                            serialization::load<Archiver, member_type>(
-                                archive_tmp, member_ref);
+                            serialization::load<Archiver, member_type>(archive_tmp, member_ref);
                         }
                     });
 
@@ -543,8 +540,7 @@ struct serializer_impl<Archiver, std::array<Item, Size>>
 
         for (size_t i = 0; i < Size; ++i)
         {
-            serialization::load(
-                archiver_wrapper<Archiver>::get(archive, i), array[i]);
+            serialization::load(archiver_wrapper<Archiver>::get(archive, i), array[i]);
         }
     }
 
@@ -554,8 +550,7 @@ struct serializer_impl<Archiver, std::array<Item, Size>>
 
         for (size_t i = 0; i < Size; ++i)
         {
-            serialization::save(
-                archiver_wrapper<Archiver>::get(archive, i), array[i]);
+            serialization::save(archiver_wrapper<Archiver>::get(archive, i), array[i]);
         }
     }
 };
@@ -583,8 +578,7 @@ struct serializer_impl<Archiver, std::variant<Types...>>
             [&archive, index](const auto& object)
             {
                 archiver_wrapper<Archiver>::push_index(archive, INDEX_NAME, index);
-                serialization::save(
-                    archiver_wrapper<Archiver>::get(archive, VALUE_NAME), object);
+                serialization::save(archiver_wrapper<Archiver>::get(archive, VALUE_NAME), object);
             },
             variant);
     }
@@ -786,16 +780,14 @@ private:
     template <std::size_t... Is>
     static void load_tuple_impl(Archiver& archive, T& tuple, std::index_sequence<Is...>)
     {
-        (serialization::load(
-             archiver_wrapper<Archiver>::get(archive, Is), std::get<Is>(tuple)),
+        (serialization::load(archiver_wrapper<Archiver>::get(archive, Is), std::get<Is>(tuple)),
          ...);
     }
 
     template <std::size_t... Is>
     static void save_tuple_impl(Archiver& archive, const T& tuple, std::index_sequence<Is...>)
     {
-        (serialization::save(
-             archiver_wrapper<Archiver>::get(archive, Is), std::get<Is>(tuple)),
+        (serialization::save(archiver_wrapper<Archiver>::get(archive, Is), std::get<Is>(tuple)),
          ...);
     }
 };
@@ -819,8 +811,7 @@ struct serializer_impl<Archiver, T>
         // If it has a value, save it
         if (has_value)
         {
-            serialization::save(
-                archiver_wrapper<Archiver>::get(archive, 1), *optional);
+            serialization::save(archiver_wrapper<Archiver>::get(archive, 1), *optional);
         }
     }
 
@@ -847,8 +838,7 @@ struct serializer_impl<Archiver, T>
                 archive_size);
 
             value_type loaded_value;
-            serialization::load(
-                archiver_wrapper<Archiver>::get(archive, 1), loaded_value);
+            serialization::load(archiver_wrapper<Archiver>::get(archive, 1), loaded_value);
             optional = std::move(loaded_value);
         }
         else

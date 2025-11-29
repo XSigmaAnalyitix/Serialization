@@ -3,11 +3,9 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
-#include <iostream>
 #include <map>
 #include <set>
 #include <string>
-#include <type_traits>
 #include <unordered_map>
 #include <utility>
 #include <variant>
@@ -53,7 +51,7 @@ private:
 };
 
 SERIALIZATION_REGISTER_DERIVED_SERIALIZATION(test_derived_serialization);
-}  // namespace serialization
+}  // namespace test
 
 //=============================================================================
 // JSON Serialization Tests
@@ -177,10 +175,14 @@ TEST_F(JsonSerializationTest, DerivedTypeSerialization)
     const auto& rhs = std::make_shared<test::test_derived_serialization>(6.7, "me");
     serialization::ptr_const<test::test_serialization> lhs;
     serialization::save(buffer, rhs);
-    serialization::load(buffer, lhs);
+    serialization::serialization_impl::access::write_json(
+        "test_derived_serialization.json", buffer);
 
-    auto lhs_derived =
-        std::dynamic_pointer_cast<const test::test_derived_serialization>(lhs);
+    serialization::json root;
+    serialization::serialization_impl::access::read_json("test_derived_serialization.json", root);
+    serialization::load(root, lhs);
+
+    auto lhs_derived = std::dynamic_pointer_cast<const test::test_derived_serialization>(lhs);
     EXPECT_NE(lhs_derived, nullptr);
     EXPECT_EQ(rhs->d(), lhs->d());
     EXPECT_EQ(rhs->n(), lhs_derived->n());

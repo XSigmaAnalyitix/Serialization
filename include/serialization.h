@@ -16,11 +16,16 @@
 namespace serialization
 {
 #define COMMA ,
-#define SERIALIZATION_REGISTER_DERIVED_SERIALIZATION(type)                                    \
-    static serialization::RegistererJsonSerializationRegistry SERIALIZATION_ANONYMOUS_VARIABLE(g_JsonSerializationRegistry)( \
-        serialization::demangle(typeid(type).name()), serialization::JsonSerializationRegistry(), &serialization::register_serializer_impl<serialization::json COMMA type>); \
-    static serialization::RegistererBinarySerializationRegistry SERIALIZATION_ANONYMOUS_VARIABLE(g_BinarySerializationRegistry)( \
-        serialization::demangle(typeid(type).name()), serialization::BinarySerializationRegistry(), \
+#define SERIALIZATION_REGISTER_DERIVED_SERIALIZATION(type)                                        \
+    static serialization::RegistererJsonSerializationRegistry SERIALIZATION_ANONYMOUS_VARIABLE(   \
+        g_JsonSerializationRegistry)(                                                             \
+        serialization::demangle(typeid(type).name()),                                             \
+        serialization::JsonSerializationRegistry(),                                               \
+        &serialization::register_serializer_impl<serialization::json COMMA type>);                \
+    static serialization::RegistererBinarySerializationRegistry SERIALIZATION_ANONYMOUS_VARIABLE( \
+        g_BinarySerializationRegistry)(                                                           \
+        serialization::demangle(typeid(type).name()),                                             \
+        serialization::BinarySerializationRegistry(),                                             \
         &serialization::register_serializer_impl<serialization::multi_process_stream COMMA type>);
 
 namespace serialization_impl
@@ -35,8 +40,7 @@ public:
     static std::vector<unsigned char> binary_serialize(const ptr_const<T>& obj)
     {
         serialization::multi_process_stream buffer;
-        serialization::save<serialization::multi_process_stream, ptr_const<T>>(
-            buffer, obj);
+        serialization::save<serialization::multi_process_stream, ptr_const<T>>(buffer, obj);
         return buffer.GetRawData();
     };
 
@@ -46,8 +50,7 @@ public:
         serialization::multi_process_stream buffer;
         buffer.SetRawData(buffer_ref);
         ptr_const<T> ptr_t;
-        serialization::load<serialization::multi_process_stream, ptr_const<T>>(
-            buffer, ptr_t);
+        serialization::load<serialization::multi_process_stream, ptr_const<T>>(buffer, ptr_t);
         return ptr_t;
     };
 
