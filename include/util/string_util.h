@@ -1,19 +1,20 @@
-/**
- * @file string_util.h
- * @brief Comprehensive string utility functions for the Serialization Core library
- *
- * This header provides a collection of high-performance string manipulation,
- * conversion, and utility functions designed for financial computing applications.
- * All functions are optimized for performance and thread-safety where applicable.
- *
- * @author Serialization Development Team
- * @version 2.0
- * @date 2024
- */
+/* Copyright 2018 The Serialization Authors. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================*/
 
 #pragma once
 
-#ifndef __SERIALIZATION_WRAP__
 
 #include <stdarg.h>  // for va_list
 
@@ -415,5 +416,3 @@ SERIALIZATION_FORCE_INLINE std::string to_lower(std::string_view input)
 }
 }  // namespace strings
 }  // namespace serialization
-
-#endif  // __SERIALIZATION_WRAP__
