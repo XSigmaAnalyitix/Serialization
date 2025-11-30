@@ -183,6 +183,7 @@ TEST_F(JsonSerializationTest, DerivedTypeSerialization)
     serialization::load(root, lhs);
 
     auto lhs_derived = std::dynamic_pointer_cast<const test::test_derived_serialization>(lhs);
+
     EXPECT_NE(lhs_derived, nullptr);
     EXPECT_EQ(rhs->d(), lhs->d());
     EXPECT_EQ(rhs->n(), lhs_derived->n());
