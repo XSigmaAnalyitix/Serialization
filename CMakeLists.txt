@@ -5,6 +5,15 @@ project(Serialization
     LANGUAGES CXX
 )
 
+# Add cmake modules directory to the module path
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+# Include build speed optimization (ccache, sccache, buildcache)
+include(cache)
+
+# Include clang-tidy static analysis configuration
+include(clang_tidy)
+
 # Enable CTest for testing
 enable_testing()
 

@@ -16,6 +16,7 @@ compile_commands.json
 
 # Keep our custom cmake files
 !cmake/
+!cmake/*.cmake
 !cmake/*.cmake.in
 !CMakeLists.txt
 
