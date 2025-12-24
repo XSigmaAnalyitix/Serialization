@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmake --build:*)",
+      "Bash(./TestBinarySerialization)",
+      "Bash(./build/TestBinarySerialization:*)",
+      "Bash(./build/TestJsonSerialization:*)",
+      "Bash(include/common/serialization_macros.h)",
+      "Bash(make:*)",
+      "Bash(./TestJsonSerialization)",
+      "Bash(ninja)",
+      "Bash(dir:*)",
+      "Bash(copy Serialization.dll DebugSerialization.dll)",
+      "Bash(cmake:*)",
+      "Bash(./TestXmlSerialization:*)",
+      "Bash(cat:*)",
+      "Bash(./build/TestXmlSerialization:*)",
+      "Bash(./TestFpmlSerialization:*)",
+      "Bash(./build/TestFpmlSerialization:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
